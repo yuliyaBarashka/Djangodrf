@@ -5,20 +5,18 @@ from lms.models import Course, Lesson
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'preview', 'video_url', 'course', 'owner']
+        read_only_fields = ['owner']
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    # Поле для подсчета количества уроков (Задание 1)
     lessons_count = serializers.SerializerMethodField()
-
-    # Поле для вывода всех уроков курса (Задание 3)
     lessons = LessonSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'preview', 'description', 'lessons_count', 'lessons']
+        fields = ['id', 'name', 'preview', 'description', 'lessons_count', 'lessons', 'owner']
+        read_only_fields = ['owner']
 
     def get_lessons_count(self, obj):
-        """Метод для подсчета количества уроков в курсе"""
         return obj.lessons.count()
