@@ -12,4 +12,7 @@ urlpatterns = [
     path('lessons/<int:pk>/', views.LessonRetrieveAPIView.as_view(), name='lesson_retrieve'),
     path('lessons/<int:pk>/update/', views.LessonUpdateAPIView.as_view(), name='lesson_update'),
     path('lessons/<int:pk>/delete/', views.LessonDestroyAPIView.as_view(), name='lesson_delete'),
+
+    # для подписки
+    path('subscriptions/', views.SubscriptionView.as_view(), name='subscriptions'),
 ]

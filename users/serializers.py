@@ -36,6 +36,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    """Полный профиль (для владельца)"""
     payments = PaymentSerializer(many=True, read_only=True)
 
     class Meta:
@@ -44,12 +45,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор для обновления профиля"""
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'phone', 'city', 'avatar']
 
 
 class UserPublicProfileSerializer(serializers.ModelSerializer):
+    """Публичный профиль (без чувствительных данных)"""
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name', 'last_name', 'city', 'avatar']
