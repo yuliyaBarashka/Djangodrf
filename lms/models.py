@@ -13,6 +13,13 @@ class Course(models.Model):
         blank=True,
         related_name='owned_courses'
     )
+    # Поля для Stripe
+    stripe_product_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='ID продукта в Stripe'
+    )
 
     def __str__(self):
         return self.name
@@ -37,7 +44,6 @@ class Lesson(models.Model):
 
 
 class Subscription(models.Model):
-    """Модель подписки на обновления курса"""
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -51,11 +57,9 @@ class Subscription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # Уникальность пары пользователь-курс
         unique_together = ('user', 'course')
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
 
     def __str__(self):
         return f"{self.user.email} -> {self.course.name}"
-    

@@ -7,12 +7,20 @@ router.register(r'courses', views.CourseViewSet, basename='course')
 
 urlpatterns = [
     path('', include(router.urls)),
+
+    # Уроки
     path('lessons/', views.LessonListAPIView.as_view(), name='lesson_list'),
     path('lessons/create/', views.LessonCreateAPIView.as_view(), name='lesson_create'),
     path('lessons/<int:pk>/', views.LessonRetrieveAPIView.as_view(), name='lesson_retrieve'),
     path('lessons/<int:pk>/update/', views.LessonUpdateAPIView.as_view(), name='lesson_update'),
     path('lessons/<int:pk>/delete/', views.LessonDestroyAPIView.as_view(), name='lesson_delete'),
 
-    # для подписки
+    # Подписка
     path('subscriptions/', views.SubscriptionView.as_view(), name='subscriptions'),
+
+    # Платежи (Stripe)
+    path('payments/create/', views.PaymentCreateView.as_view(), name='payment_create'),
+    path('payments/status/', views.PaymentStatusView.as_view(), name='payment_status'),
+    path('payments/success/', views.PaymentSuccessView.as_view(), name='payment_success'),
+    path('payments/cancel/', views.PaymentCancelView.as_view(), name='payment_cancel'),
 ]
