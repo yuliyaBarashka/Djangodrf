@@ -133,3 +133,19 @@ Djangodrf/
 ├── manage.py  
 ├── requirements.txt  
 └── README.md  
+
+
+## ⚡ Celery + Redis
+
+### Запуск Celery
+
+```bash
+# Запуск worker
+celery -A config worker --loglevel=info
+
+# Запуск beat (для периодических задач)
+celery -A config beat --loglevel=info
+
+# Запуск обоих в одном терминале
+celery -A config worker --loglevel=info --beat
+```

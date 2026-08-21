@@ -1,20 +1,25 @@
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.views import APIView  # <-- Обязательно!
-from rest_framework.permissions import IsAuthenticated, AllowAny  # <-- Добавьте AllowAny
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.filters import OrderingFilter
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
+
 from lms.models import Course, Lesson, Subscription
-from lms.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
-from users.permissions import IsModerator, IsOwner, IsModeratorOrOwner
+from lms.serializers import CourseSerializer, LessonSerializer
+from users.permissions import IsModerator, IsOwner
 from lms.paginators import CoursePaginator, LessonPaginator
+from lms.tasks import send_course_update_notification, send_course_update_notification_if_updated
 from lms.services import create_payment_with_stripe, retrieve_stripe_session
 from users.models import Payment
-from django.conf import settings
 
+
+# ============================================================
+# КУРСЫ (ViewSet)
+# ============================================================
 
 @extend_schema(tags=['Courses'])
 class CourseViewSet(viewsets.ModelViewSet):
@@ -22,16 +27,22 @@ class CourseViewSet(viewsets.ModelViewSet):
     ViewSet для управления курсами.
 
     Предоставляет полный CRUD для курсов с разграничением прав доступа:
-    - Просмотр: все авторизованные пользователи
-    - Создание: только не-модераторы
-    - Редактирование: модераторы или владельцы
-    - Удаление: только владельцы
+    - Просмотр (list, retrieve): все авторизованные пользователи
+    - Создание (create): только не-модераторы
+    - Редактирование (update, partial_update): модераторы или владельцы
+    - Удаление (destroy): только владельцы
+
+    При обновлении курса автоматически отправляются уведомления подписчикам
+    через Celery (асинхронно).
     """
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     pagination_class = CoursePaginator
 
     def get_permissions(self):
+        """
+        Настройка прав доступа для разных действий.
+        """
         if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]
         elif self.action == 'create':
@@ -45,25 +56,70 @@ class CourseViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
+        """
+        При создании курса автоматически назначаем владельца.
+        """
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
+        """
+        Фильтрация queryset в зависимости от роли пользователя.
+        - Модераторы видят все курсы
+        - Обычные пользователи видят только свои курсы
+        """
         user = self.request.user
         if user.groups.filter(name='Moderators').exists():
             return Course.objects.all()
         return Course.objects.filter(owner=user)
 
     def get_serializer_context(self):
+        """
+        Передаем request в контекст для проверки подписки (is_subscribed).
+        """
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
 
+    def perform_update(self, serializer):
+        """
+        При обновлении курса:
+        1. Сохраняем курс
+        2. Отправляем уведомления подписчикам (асинхронно через Celery)
+
+        Основное задание: отправка уведомлений всем подписчикам.
+        Дополнительное задание: проверка, что курс не обновлялся более 4 часов.
+        """
+        # Сохраняем курс
+        course = serializer.save()
+
+        # Основное задание (Задание 2) - отправка всем подписчикам
+        send_course_update_notification.delay(
+            course_id=course.id,
+            updated_by_email=self.request.user.email
+        )
+
+        # Дополнительное задание (*) - проверка времени обновления (4 часа)
+        # Раскомментируйте строку ниже, чтобы включить проверку 4-х часов
+        # send_course_update_notification_if_updated.delay(
+        #     course_id=course.id,
+        #     updated_by_email=self.request.user.email
+        # )
+
+
+# ============================================================
+# УРОКИ (Generic классы)
+# ============================================================
 
 @extend_schema(tags=['Lessons'])
 class LessonListAPIView(generics.ListAPIView):
-    """Список всех уроков с пагинацией"""
+    """
+    Список всех уроков с пагинацией.
+
+    - Модераторы видят все уроки
+    - Обычные пользователи видят только свои уроки
+    """
     serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     pagination_class = LessonPaginator
 
     def get_queryset(self):
@@ -83,7 +139,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated, ~IsModerator]
+    permission_classes = [IsAuthenticated, ~IsModerator]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -91,10 +147,15 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 @extend_schema(tags=['Lessons'])
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
-    """Просмотр одного урока"""
+    """
+    Просмотр одного урока.
+
+    - Модераторы могут смотреть любые уроки
+    - Обычные пользователи - только свои
+    """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -109,10 +170,11 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     Обновление урока.
 
     Доступно для модераторов или владельцев.
+    Модераторы могут редактировать любые уроки, владельцы - только свои.
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated, IsModerator | IsOwner]
+    permission_classes = [IsAuthenticated, IsModerator | IsOwner]
 
 
 @extend_schema(tags=['Lessons'])
@@ -121,12 +183,16 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     Удаление урока.
 
     Доступно только для владельцев.
-    Модераторы НЕ МОГУТ удалять уроки.
+    Модераторы НЕ МОГУТ удалять уроки (только просмотр и редактирование).
     """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwner]
 
+
+# ============================================================
+# ПОДПИСКИ (APIView)
+# ============================================================
 
 @extend_schema(tags=['Subscriptions'])
 class SubscriptionView(APIView):
@@ -136,18 +202,44 @@ class SubscriptionView(APIView):
     POST запрос с course_id:
     - Если подписка существует - удаляет её
     - Если подписки нет - создаёт новую
+
+    Пример запроса:
+    {
+        "course_id": 1
+    }
+
+    Пример ответа:
+    {
+        "message": "Подписка добавлена",
+        "action": "subscribed",
+        "course_id": 1,
+        "course_name": "Python для начинающих"
+    }
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         request=OpenApiTypes.OBJECT,
-        responses={200: OpenApiTypes.OBJECT},
+        responses={
+            200: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
         examples=[
             OpenApiExample(
-                'Успешный ответ',
+                'Успешное добавление подписки',
                 value={
                     "message": "Подписка добавлена",
                     "action": "subscribed",
+                    "course_id": 1,
+                    "course_name": "Python для начинающих"
+                }
+            ),
+            OpenApiExample(
+                'Успешное удаление подписки',
+                value={
+                    "message": "Подписка удалена",
+                    "action": "unsubscribed",
                     "course_id": 1,
                     "course_name": "Python для начинающих"
                 }
@@ -184,13 +276,32 @@ class SubscriptionView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+# ============================================================
+# ПЛАТЕЖИ (Stripe Integration)
+# ============================================================
+
 @extend_schema(tags=['Payments'])
 class PaymentCreateView(APIView):
     """
-    Создание платежа через Stripe
+    Создание платежа через Stripe.
 
     POST запрос с данными о курсе и сумме.
     Возвращает ссылку на оплату в Stripe.
+
+    Пример запроса:
+    {
+        "course_id": 1,
+        "amount": 5000
+    }
+
+    Пример ответа:
+    {
+        "payment_id": 1,
+        "amount": "5000.00",
+        "payment_url": "https://checkout.stripe.com/...",
+        "session_id": "cs_test_...",
+        "status": "pending"
+    }
     """
     permission_classes = [IsAuthenticated]
 
@@ -199,8 +310,14 @@ class PaymentCreateView(APIView):
             'application/json': {
                 'type': 'object',
                 'properties': {
-                    'course_id': {'type': 'integer', 'description': 'ID курса'},
-                    'amount': {'type': 'number', 'description': 'Сумма платежа в рублях'},
+                    'course_id': {
+                        'type': 'integer',
+                        'description': 'ID курса'
+                    },
+                    'amount': {
+                        'type': 'number',
+                        'description': 'Сумма платежа в рублях'
+                    },
                 },
                 'required': ['course_id', 'amount']
             }
@@ -216,8 +333,18 @@ class PaymentCreateView(APIView):
                     'status': {'type': 'string'},
                 }
             },
-            400: {'type': 'object', 'properties': {'error': {'type': 'string'}}},
-            404: {'type': 'object', 'properties': {'error': {'type': 'string'}}},
+            400: {
+                'type': 'object',
+                'properties': {
+                    'error': {'type': 'string'}
+                }
+            },
+            404: {
+                'type': 'object',
+                'properties': {
+                    'error': {'type': 'string'}
+                }
+            }
         }
     )
     def post(self, request):
@@ -269,7 +396,20 @@ class PaymentCreateView(APIView):
 @extend_schema(tags=['Payments'])
 class PaymentStatusView(APIView):
     """
-    Получение статуса платежа из Stripe
+    Получение статуса платежа из Stripe.
+
+    GET запрос с параметром payment_id.
+
+    Пример запроса:
+    GET /api/payments/status/?payment_id=1
+
+    Пример ответа:
+    {
+        "status": "paid",
+        "payment_status": "paid",
+        "amount": "5000.00",
+        "currency": "rub"
+    }
     """
     permission_classes = [IsAuthenticated]
 
@@ -293,7 +433,18 @@ class PaymentStatusView(APIView):
                     'currency': {'type': 'string'},
                 }
             },
-            404: {'type': 'object', 'properties': {'error': {'type': 'string'}}},
+            400: {
+                'type': 'object',
+                'properties': {
+                    'error': {'type': 'string'}
+                }
+            },
+            404: {
+                'type': 'object',
+                'properties': {
+                    'error': {'type': 'string'}
+                }
+            }
         }
     )
     def get(self, request):
@@ -343,7 +494,7 @@ class PaymentStatusView(APIView):
 @extend_schema(tags=['Payments'])
 class PaymentSuccessView(APIView):
     """
-    Страница успешной оплаты (редирект после оплаты)
+    Страница успешной оплаты (редирект после оплаты из Stripe).
     """
     permission_classes = [AllowAny]
 
@@ -357,7 +508,7 @@ class PaymentSuccessView(APIView):
 @extend_schema(tags=['Payments'])
 class PaymentCancelView(APIView):
     """
-    Страница отмены оплаты
+    Страница отмены оплаты.
     """
     permission_classes = [AllowAny]
 
