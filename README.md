@@ -149,3 +149,35 @@ celery -A config beat --loglevel=info
 # Запуск обоих в одном терминале
 celery -A config worker --loglevel=info --beat
 ```
+## 🐳 Запуск через Docker Compose
+
+### 1. Подготовка
+
+```bash
+# Скопировать переменные окружения
+cp .env.docker.sample .env
+
+# Отредактировать .env при необходимости
+nano .env
+# Собрать и запустить все контейнеры
+docker-compose up --build -d
+
+# Проверить статус
+docker-compose ps
+
+# Посмотреть логи
+docker-compose logs -f app celery_worker celery_beat
+docker-compose exec app python manage.py createsuperuser
+docker-compose down
+
+# Остановка с удалением томов (очистка данных)
+docker-compose down -v
+```
+## Доступ к приложению
+
+API: http://localhost:8000/api/
+Админка: http://localhost:8000/admin/
+Swagger: http://localhost:8000/api/docs/swagger/
+
+
+---
