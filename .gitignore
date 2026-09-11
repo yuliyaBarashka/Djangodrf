@@ -229,3 +229,8 @@ __marimo__/
 *.db
 
 .env.docker
+
+db.sqlite3
+.coverage
+
+

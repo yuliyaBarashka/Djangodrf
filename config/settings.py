@@ -66,14 +66,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+import os
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "lms_db"),
-        "USER": os.getenv("POSTGRES_USER", "lms_user"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "lms_password"),
-        "HOST": os.getenv("POSTGRES_HOST", "db"),
-        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'm2bilingual_db'),
+        'USER': os.getenv('POSTGRES_USER', 'm2bilingual_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'StrongPassword2026!'),
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # ← localhost!
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
 
