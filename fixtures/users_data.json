@@ -1,0 +1,46 @@
+[
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$I2SwfC39xhWZTdNFtX3zTp$JOsSjfrDjpRzPWTkOJWL1se2R3KQaVqU7vFtiWg8Osc=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "Тест",
+        "last_name": "Пользователь",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-11T09:33:15.988Z",
+        "email": "test@example.com",
+        "phone": null,
+        "city": null,
+        "avatar": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "payment_date": "2026-08-11T09:33:16.063Z",
+        "course": 2,
+        "lesson": null,
+        "amount": "5000.00",
+        "payment_method": "transfer"
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 2,
+    "fields": {
+        "user": 1,
+        "payment_date": "2026-08-11T09:33:16.065Z",
+        "course": null,
+        "lesson": 1,
+        "amount": "1000.00",
+        "payment_method": "cash"
+    }
+}
+]
