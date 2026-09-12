@@ -103,7 +103,7 @@ jobs:
           docker compose config
 
   # ============================================================
-  # ЭТАП 4: ДЕПЛОЙ через Docker Compose
+  # ЭТАП 4: ДЕПЛОЙ через Docker
   # ============================================================
   deploy:
     name: 🚀 Deploy to Server
@@ -122,7 +122,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
 
       - name: 📤 Copy files to server
         run: |
