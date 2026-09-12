@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M2Bilingual — Онлайн-школа иностранных языков</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="top-bar">
+    <div class="container">
+        <div class="top-bar__left">
+            <span class="top-bar__city">Ваш город: Москва</span>
+        </div>
+        <div class="top-bar__right">
+            <a href="#" class="top-bar__link">Онлайн оплата</a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+    <div class="container">
+        <div class="header__inner">
+            <a href="/" class="logo">
+                <div class="logo__text">
+                    <span class="logo__title">M2BILINGUAL</span>
+                    <span class="logo__subtitle">ИНОСТРАННЫЕ ЯЗЫКИ ОНЛАЙН</span>
+                </div>
+            </a>
+            <div class="header__right">
+                <a href="tel:+74994448268" class="header__phone">8 (499) 444-82-68</a>
+                <button class="burger" id="burger" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ===== TABS ===== -->
+<nav class="tabs">
+    <div class="container">
+        <ul class="tabs__list">
+            <li><a href="#" class="tabs__link">Детям</a></li>
+            <li><a href="#" class="tabs__link">Взрослым</a></li>
+            <li><a href="#" class="tabs__link">Преподавателям</a></li>
+            <li><a href="#" class="tabs__link">Компаниям</a></li>
+            <li><a href="#" class="tabs__link">Кембриджские экзамены</a></li>
+            <li><a href="#" class="tabs__link tabs__link--active">Онлайн обучение</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ===== BREADCRUMBS ===== -->
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Главная</a> <span>/</span> <span>Онлайн-обучение</span>
+    </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="container">
+        <div class="hero__content">
+            <h1 class="hero__title">
+                Онлайн-школа<br>иностранных языков
+            </h1>
+            <a href="#contact" class="btn btn--primary">Оставить заявку</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== INFO ===== -->
+<section class="info">
+    <div class="container">
+        <div class="info__content">
+            <p class="info__text">
+                Лингвистический Центр <strong>M2Bilingual</strong> приглашает на дистанционные курсы иностранных языков.
+            </p>
+            <p class="info__text">
+                Языковые курсы онлайн в нашей школе — это возможность изучать английский, китайский, испанский и другие языки (всего 8) с сильным преподавателем.
+                Откройте для себя новые языки общения или прокачайте имеющиеся навыки до более высокого уровня не выходя из дома.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer__inner">
+            <div class="footer__col">
+                <span class="footer__title">M2Bilingual</span>
+                <p class="footer__text">Онлайн-школа иностранных языков</p>
+            </div>
+            <div class="footer__col">
+                <span class="footer__title">Контакты</span>
+                <a href="tel:+74994448268" class="footer__link">8 (000) 000-00-00</a>
+                <a href="mailto:info@m2bilingual.ru" class="footer__link">info@m2bilingual.ru</a>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <span>&copy; 2026 M2Bilingual. Все права защищены.</span>
+        </div>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
