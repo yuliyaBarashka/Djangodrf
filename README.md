@@ -181,3 +181,10 @@ Swagger: http://localhost:8000/api/docs/swagger/
 
 
 ---
+## 🐳 Запуск через Docker Compose (локально)
+
+### 1. Скопируй переменные окружения
+
+```bash
+cp .env.sample .env
+```
