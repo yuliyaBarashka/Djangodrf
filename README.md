@@ -188,3 +188,19 @@ Swagger: http://localhost:8000/api/docs/swagger/
 ```bash
 cp .env.sample .env
 ```
+## 🌐 Production
+
+Приложение развёрнуто на VPS: **http://51.250.20.108/**  
+  
+- **Админка:** http://51.250.20.108/admin/  
+- **API:** http://51.250.20.108/api/  
+- **Swagger:** http://51.250.20.108/api/docs/swagger/  
+  
+### CI/CD
+  
+При push в `main` или `develop`:  
+1. Запускается линтинг (flake8)  
+2. Запускаются тесты (с PostgreSQL + Redis)  
+3. Выполняется автоматический деплой на VPS через SSH  
+  
+Секреты настраиваются в GitHub: `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`, `DEPLOY_DIR` и др.  
