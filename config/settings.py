@@ -166,7 +166,7 @@ CELERY_CACHE_BACKEND = 'default'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Email settings for notifications
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 # For production use:
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
@@ -174,4 +174,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For developm
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = 'noreply@lms.com'
+#DEFAULT_FROM_EMAIL = 'noreply@lms.com'
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER', 'noreply@m2bilingual.ru')
+
+# Telegram
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', '')
