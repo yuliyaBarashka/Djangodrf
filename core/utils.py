@@ -4,12 +4,20 @@ from django.conf import settings
 
 
 def send_telegram_message(text):
+    """Отправка через прокси"""
     if not settings.TELEGRAM_BOT_TOKEN or not settings.TELEGRAM_CHAT_ID:
         return False
-    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {'chat_id': settings.TELEGRAM_CHAT_ID, 'text': text, 'parse_mode': 'HTML'}
+
+    # Используем прокси
+    url = f"https://tg.i-c-a.su/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        'chat_id': settings.TELEGRAM_CHAT_ID,
+        'text': text,
+        'parse_mode': 'HTML',
+    }
+
     try:
-        response = requests.post(url, json=payload, timeout=5)
+        response = requests.post(url, json=payload, timeout=10)
         return response.status_code == 200
     except Exception as e:
         print(f"Telegram error: {e}")
