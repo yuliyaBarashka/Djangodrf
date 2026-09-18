@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import ContactForm
 from .models import ContactRequest
-from .utils import send_telegram_message, send_email_notification
+from .utils import send_vk_message, send_email_notification
 
 
 def index(request):
@@ -33,15 +33,15 @@ def contact(request):
                 message=contact_obj.message,
             )
 
-            # Telegram
-            telegram_text = (
-                f"🔔 <b>Новая заявка</b>\n\n"
-                f"👤 <b>Имя:</b> {contact_obj.name}\n"
-                f"📞 <b>Телефон:</b> {contact_obj.phone}\n"
-                f"📧 <b>Email:</b> {contact_obj.email or 'не указан'}\n"
-                f"💬 <b>Сообщение:</b> {contact_obj.message or 'нет'}"
+            # VK
+            vk_text = (
+                f"🔔 Новая заявка\n\n"
+                f"👤 Имя: {contact_obj.name}\n"
+                f"📞 Телефон: {contact_obj.phone}\n"
+                f"📧 Email: {contact_obj.email or 'не указан'}\n"
+                f"💬 Сообщение: {contact_obj.message or 'нет'}"
             )
-            send_telegram_message(telegram_text)
+            send_vk_message(vk_text)
 
             messages.success(request, 'Спасибо! Заявка отправлена. Мы свяжемся с вами.')
             return redirect('core:contact')

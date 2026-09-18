@@ -3,28 +3,36 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-def send_telegram_message(text):
-    """Отправка через прокси"""
-    if not settings.TELEGRAM_BOT_TOKEN or not settings.TELEGRAM_CHAT_ID:
+def send_vk_message(text):
+    """Отправка сообщения в VK от имени сообщества"""
+    if not settings.VK_GROUP_TOKEN or not settings.VK_ADMIN_ID:
+        print("VK: токен или admin_id не заданы")
         return False
 
-    # Используем прокси
-    url = f"https://tg.i-c-a.su/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {
-        'chat_id': settings.TELEGRAM_CHAT_ID,
-        'text': text,
-        'parse_mode': 'HTML',
+    url = 'https://api.vk.com/method/messages.send'
+    params = {
+        'user_id': settings.VK_ADMIN_ID,
+        'message': text,
+        'random_id': 0,
+        'access_token': settings.VK_GROUP_TOKEN,
+        'v': '5.131',
     }
 
     try:
-        response = requests.post(url, json=payload, timeout=10)
-        return response.status_code == 200
+        response = requests.post(url, data=params, timeout=10)
+        data = response.json()
+        if 'error' in data:
+            print(f"VK API error: {data['error']}")
+            return False
+        print(f"VK: сообщение отправлено, response: {data}")
+        return True
     except Exception as e:
-        print(f"Telegram error: {e}")
+        print(f"VK error: {e}")
         return False
 
 
 def send_email_notification(name, phone, email, message):
+    """Отправка email"""
     subject = "🔔 Новая заявка с сайта M2Bilingual"
     body = f"""
 Новая заявка с сайта M2Bilingual:
@@ -42,7 +50,7 @@ def send_email_notification(name, phone, email, message):
             subject=subject,
             message=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['zohn12333@gmail.com'],
+            recipient_list=['zohn12333@gmail.com' , 'ut122235@gmail.com'],
             fail_silently=False,
         )
         return True
