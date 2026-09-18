@@ -12,6 +12,27 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'http://51.250.20.108',
+    'https://51.250.20.108',
+    'http://m2bilingual.ru',
+    'https://m2bilingual.ru',
+    'http://www.m2bilingual.ru',
+    'https://www.m2bilingual.ru',
+    'http://localhost',
+    'http://localhost:8000',
+    'http://127.0.0.1',
+    'http://127.0.0.1:8000',
+]
+
+# Cookies
+CSRF_COOKIE_SECURE = False  # True только если HTTPS
+SESSION_COOKIE_SECURE = False  # True только если HTTPS
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -34,6 +55,7 @@ INSTALLED_APPS = [
     'users',
     'lms',
     'core',
+    'dashboard',
 ]
 
 # ===== MIDDLEWARE =====
@@ -164,17 +186,6 @@ CELERY_CACHE_BACKEND = 'default'
 
 # Celery Beat settings
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-# Email settings for notifications
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-# For production use:
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-#DEFAULT_FROM_EMAIL = 'noreply@lms.com'
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
