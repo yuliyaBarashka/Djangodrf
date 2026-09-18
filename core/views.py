@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import ContactForm
 from .models import ContactRequest
 from .utils import send_vk_message, send_email_notification
+from django.conf import settings
 
 
 def index(request):
@@ -47,3 +48,25 @@ def contact(request):
             return redirect('core:contact')
 
     return render(request, 'core/contact.html', {'form': form})
+
+
+def privacy_policy(request):
+    """Политика обработки персональных данных"""
+    context = {
+        'operator_name': settings.OPERATOR_FULL_NAME,
+        #'operator_inn': settings.OPERATOR_INN,
+        'operator_email': settings.OPERATOR_EMAIL,
+        'site_url': settings.SITE_URL,
+    }
+    return render(request, 'core/privacy.html', context)
+
+
+def consent(request):
+    """Согласие на обработку персональных данных"""
+    context = {
+        'operator_name': settings.OPERATOR_FULL_NAME,
+        #'operator_inn': settings.OPERATOR_INN,
+        'operator_email': settings.OPERATOR_EMAIL,
+        'site_url': settings.SITE_URL,
+    }
+    return render(request, 'core/consent.html', context)

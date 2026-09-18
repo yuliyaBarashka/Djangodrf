@@ -107,6 +107,11 @@
             <span>&copy; 2026 M2Bilingual. Все права защищены.</span>
         </div>
     </div>
+    <div class="footer__col">
+        <span class="footer__title">Документы</span>
+        <a href="{% url 'core:privacy' %}" class="footer__link">Политика конфиденциальности</a>
+        <a href="{% url 'core:consent' %}" class="footer__link">Согласие на обработку ПД</a>
+    </div>
 </footer>
 
 <script src="{% static 'js/main.js' %}"></script>
