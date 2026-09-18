@@ -1,0 +1,78 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Заявка — M2Bilingual{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:requests' %}">Заявки</a> / Детали{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">Заявка от {{ contact.name }}</h1>
+<p class="page-subtitle">{{ contact.created_at|date:"d.m.Y H:i" }}</p>
+
+<div class="table-card" style="padding: 32px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+        <div>
+            <div style="font-size: 12px; color: var(--gray); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Имя</div>
+            <div style="font-size: 18px; font-weight: 600;">{{ contact.name }}</div>
+        </div>
+        <div>
+            <div style="font-size: 12px; color: var(--gray); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Телефон</div>
+            <div style="font-size: 18px; font-weight: 600;">
+                <a href="tel:{{ contact.phone }}" style="color: var(--primary); text-decoration: none;">
+                    {{ contact.phone }}
+                </a>
+            </div>
+        </div>
+        <div>
+            <div style="font-size: 12px; color: var(--gray); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Email</div>
+            <div style="font-size: 18px; font-weight: 600;">
+                {% if contact.email %}
+                    <a href="mailto:{{ contact.email }}" style="color: var(--primary); text-decoration: none;">
+                        {{ contact.email }}
+                    </a>
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            <div style="font-size: 12px; color: var(--gray); text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Статус</div>
+            <div>
+                {% if contact.is_processed %}
+                    <span class="badge badge--success">Обработано</span>
+                {% else %}
+                    <span class="badge badge--warning">Новое</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if contact.message %}
+        <div style="border-top: 1px solid var(--gray-light); padding-top: 24px; margin-bottom: 24px;">
+            <div style="font-size: 12px; color: var(--gray); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">Сообщение</div>
+            <div style="font-size: 16px; line-height: 1.6;">{{ contact.message }}</div>
+        </div>
+    {% endif %}
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        {% if not contact.is_processed %}
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn--success">
+                    <i class="fas fa-check"></i> Отметить как обработано
+                </button>
+            </form>
+        {% endif %}
+
+        {% if request.user.is_superuser %}
+            <a href="{% url 'dashboard:request_delete' contact.pk %}" class="btn btn--danger" onclick="return confirm('Удалить заявку?')">
+                <i class="fas fa-trash"></i> Удалить
+            </a>
+        {% endif %}
+
+        <a href="{% url 'dashboard:requests' %}" class="btn" style="background: var(--gray-light);">
+            <i class="fas fa-arrow-left"></i> Назад
+        </a>
+    </div>
+</div>
+
+{% endblock %}

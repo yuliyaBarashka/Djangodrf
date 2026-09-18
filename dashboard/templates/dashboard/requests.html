@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Заявки — M2Bilingual{% endblock %}
+{% block breadcrumb %}Заявки{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">Заявки</h1>
+<p class="page-subtitle">Все заявки с сайта</p>
+
+<!-- Filters -->
+<form method="get" class="filters">
+    <input type="text" name="search" placeholder="Поиск по имени, телефону, email..." value="{{ search }}">
+    
+    <select name="status">
+        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Все</option>
+        <option value="unprocessed" {% if status_filter == 'unprocessed' %}selected{% endif %}>Не обработанные</option>
+        <option value="processed" {% if status_filter == 'processed' %}selected{% endif %}>Обработанные</option>
+    </select>
+
+    <button type="submit" class="btn btn--primary">
+        <i class="fas fa-search"></i> Найти
+    </button>
+</form>
+
+<!-- Table -->
+<div class="table-card">
+    {% if requests %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                    <tr>
+                        <td><strong>{{ req.name }}</strong></td>
+                        <td>{{ req.phone }}</td>
+                        <td>{{ req.email|default:"—" }}</td>
+                        <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            {% if req.is_processed %}
+                                <span class="badge badge--success">Обработано</span>
+                            {% else %}
+                                <span class="badge badge--warning">Новое</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'dashboard:request_detail' req.pk %}" class="btn btn--primary btn--sm">
+                                <i class="fas fa-eye"></i> Открыть
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="padding: 40px; text-align: center; color: var(--gray);">
+            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+            <p>Заявок пока нет</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

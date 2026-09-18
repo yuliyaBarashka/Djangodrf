@@ -1,0 +1,106 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Дашборд — M2Bilingual{% endblock %}
+{% block breadcrumb %}Дашборд{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">Добро пожаловать, {{ request.user.first_name|default:request.user.email }}!</h1>
+<p class="page-subtitle">Обзор заявок и статистика</p>
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--primary">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div>
+            <div class="stat-card__label">Всего заявок</div>
+            <div class="stat-card__value">{{ total_requests }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--warning">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div>
+            <div class="stat-card__label">Не обработано</div>
+            <div class="stat-card__value">{{ unprocessed }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div>
+            <div class="stat-card__label">Обработано</div>
+            <div class="stat-card__value">{{ processed }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--info">
+            <i class="fas fa-calendar-day"></i>
+        </div>
+        <div>
+            <div class="stat-card__label">За сегодня</div>
+            <div class="stat-card__value">{{ today_requests }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Latest Requests -->
+<div class="table-card">
+    <div class="table-card__header">
+        <h2 class="table-card__title">Последние заявки</h2>
+        <a href="{% url 'dashboard:requests' %}" class="btn btn--primary btn--sm">
+            <i class="fas fa-list"></i> Все заявки
+        </a>
+    </div>
+
+    {% if latest_requests %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in latest_requests %}
+                    <tr>
+                        <td><strong>{{ req.name }}</strong></td>
+                        <td>{{ req.phone }}</td>
+                        <td>{{ req.email|default:"—" }}</td>
+                        <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            {% if req.is_processed %}
+                                <span class="badge badge--success">Обработано</span>
+                            {% else %}
+                                <span class="badge badge--warning">Новое</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'dashboard:request_detail' req.pk %}" class="btn btn--primary btn--sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="padding: 40px; text-align: center; color: var(--gray);">
+            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+            <p>Заявок пока нет</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
