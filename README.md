@@ -1,46 +1,73 @@
-# 🎓 LMS System API
+# 🎓 M2Bilingual — LMS платформа онлайн-школы иностранных языков
 
-[![Django](https://img.shields.io/badge/Django-4.2.7-green.svg)](https://www.djangoproject.com/)
-[![DRF](https://img.shields.io/badge/DRF-3.14.0-red.svg)](https://www.django-rest-framework.org/)
+[![Django](https://img.shields.io/badge/Django-6.0.8-green.svg)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/DRF-3.18.0-red.svg)](https://www.django-rest-framework.org/)
 [![JWT](https://img.shields.io/badge/JWT-SimpleJWT-blue.svg)](https://django-rest-framework-simplejwt.readthedocs.io/)
+[![Celery](https://img.shields.io/badge/Celery-5.6.3-brightgreen.svg)](https://docs.celeryq.dev/)
 [![Stripe](https://img.shields.io/badge/Stripe-Integration-purple.svg)](https://stripe.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)](https://docs.docker.com/compose/)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-black.svg)](https://github.com/features/actions)
 
 ## 📋 Описание
 
-LMS (Learning Management System) API — это бэкенд для платформы онлайн-обучения с полным функционалом управления курсами, уроками, пользователями, подписками и платежами через Stripe.
+**M2Bilingual** — LMS (Learning Management System) для онлайн-школы иностранных языков.
+Полноценный бэкенд с REST API, JWT-авторизацией, Docker-контейнеризацией, CI/CD и автоматическим деплоем на VPS.
 
-**Техническое задание:** Создание SPA веб-приложения с бэкенд-сервером, возвращающим JSON-структуры.
+**Live Demo:**
+- 🌐 **Сайт:** http://51.250.20.108/
+- 🎓 **Главная:** http://51.250.20.108/
+- 📝 **Форма заявки:** http://51.250.20.108/contact/
+- 🔐 **Дашборд сотрудника:** http://51.250.20.108/dashboard/login/
+- ⚙️ **Django Admin:** http://51.250.20.108/admin/
+- 📚 **API Swagger:** http://51.250.20.108/api/docs/swagger/
+- 📖 **API ReDoc:** http://51.250.20.108/api/docs/redoc/
 
 ---
 
 ## 🚀 Основные возможности
 
 ### 👤 Пользователи
-- ✅ Регистрация и аутентификация через JWT
-- ✅ CRUD операции с пользователями
-- ✅ Разграничение ролей: пользователь, модератор, администратор
-- ✅ Профиль пользователя с историей платежей
+- ✅ Кастомная модель User с авторизацией по email
+- ✅ JWT-аутентификация (access + refresh tokens)
+- ✅ Роли: пользователь, модератор, менеджер, администратор
+- ✅ Разграничение прав доступа
 
 ### 📚 Курсы и уроки
-- ✅ Полный CRUD для курсов и уроков
-- ✅ Валидация видео-ссылок (только YouTube)
-- ✅ Подсчет количества уроков в курсе
-- ✅ Вложенный вывод уроков в курсе
+- ✅ CRUD для курсов и уроков
+- ✅ Валидация YouTube-ссылок
+- ✅ Подсчёт уроков в курсе
+- ✅ Вложенный вывод уроков
 
-### 🔐 Права доступа
-- ✅ Модератор: просмотр и редактирование, но без создания/удаления
-- ✅ Владелец: полный контроль над своими объектами
-- ✅ Обычный пользователь: только свои объекты
-- ✅ JWT авторизация с refresh токенами
-
-### 💳 Платежи
-- ✅ Интеграция с Stripe (тестовый режим)
+### 💳 Платежи (Stripe)
 - ✅ Создание продуктов и цен в Stripe
-- ✅ Checkout сессии для оплаты
+- ✅ Checkout-сессии для оплаты
 - ✅ Сохранение статуса платежа
-- ✅ Webhook обработка (опционально)
-- ✅ История платежей пользователя
+
+### 📨 Форма заявки
+- ✅ Отдельная страница `/contact/`
+- ✅ Отправка на **Email** (Gmail SMTP)
+- ✅ Сохранение в БД (`ContactRequest`)
+- ✅ Honeypot-защита от ботов
+- ✅ Админ-панель для менеджеров
+
+### 📊 Дашборд сотрудника
+- ✅ Отдельная панель `/dashboard/`
+- ✅ Кастомный вход для менеджеров
+- ✅ Статистика заявок (всего, обработано, новых, за сегодня)
+- ✅ Список заявок с фильтрами и поиском
+- ✅ Просмотр и отметка «Обработано»
+- ✅ Красивый UI (Electric style)
+
+### ⚡ Фоновые задачи (Celery)
+- ✅ Асинхронная отправка уведомлений
+- ✅ Периодическая блокировка неактивных пользователей
+- ✅ Celery Beat для расписания
+
+### 🐳 DevOps
+- ✅ Docker Compose (6 сервисов)
+- ✅ Nginx reverse proxy
+- ✅ CI/CD на GitHub Actions (lint → test → build → deploy)
+- ✅ Автоматический деплой на VPS
 
 ### 📖 Документация
 - ✅ Swagger UI (OpenAPI 3.0)
@@ -53,154 +80,346 @@ LMS (Learning Management System) API — это бэкенд для платфо
 
 | Компонент | Технология | Версия |
 |-----------|-----------|--------|
-| Backend | Django | 4.2.7 |
-| API Framework | Django REST Framework | 3.14.0 |
-| Аутентификация | JWT (SimpleJWT) | 5.3.0 |
-| Документация | drf-spectacular | 0.27.0 |
-| Платежи | Stripe API | Latest |
-| База данных | SQLite (dev) / PostgreSQL (prod) | - |
-| Переменные окружения | python-dotenv | 1.0.0 |
+| **Backend** | Django | 6.0.8 |
+| **API** | Django REST Framework | 3.18.0 |
+| **Аутентификация** | SimpleJWT | 5.5.1 |
+| **Документация** | drf-spectacular | 0.30.0 |
+| **Платежи** | Stripe | 15.5.0 |
+| **Очереди** | Celery | 5.6.3 |
+| **Брокер** | Redis | 8.1.0 |
+| **БД** | PostgreSQL | 15 |
+| **Веб-сервер** | Nginx | Alpine |
+| **Контейнеризация** | Docker Compose | 3.8+ |
+| **CI/CD** | GitHub Actions | — |
+| **ОС сервера** | Ubuntu | 24.04 LTS |
 
 ---
 
 ## 📦 Установка и запуск
 
+### Требования
+
+- Python 3.12+
+- Docker Desktop
+- Git
+
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/yuliyaBarashka/Djangodrf.git
 cd Djangodrf
-
-python3 -m venv venv
-source venv/bin/activate  # Mac/Linux
-# или
-venv\Scripts\activate  # Windows  
-
-pip install -r requirements.txt  
 ```
-Настройка переменных окружения
 
-Создайте файл .env в корне проекта на основе файла .env.sample  
+### 2. Создание .env
 
-### Применение миграций
+#### Заполни .env:
+env:
+```dotenv
+# Django
+SECRET_KEY=your-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=51.250.20.108,m2bilingual.ru,www.m2bilingual.ru,localhost,127.0.0.1
+
+# CSRF
+CSRF_TRUSTED_ORIGINS=http://localhost,http://localhost:8000,http://127.0.0.1,http://127.0.0.1:8000,http://51.250.20.108,http://m2bilingual.ru,http://www.m2bilingual.ru
+CSRF_COOKIE_SECURE=False
+SESSION_COOKIE_SECURE=False
+
+# Database
+POSTGRES_DB=m2bilingual_db
+POSTGRES_USER=m2bilingual_user
+POSTGRES_PASSWORD=StrongPassword2026!
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+
+# Redis
+REDIS_URL=redis://redis:6379/0
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+# Email (Gmail)
+EMAIL_HOST_USER=zohn12333@gmail.com
+EMAIL_HOST_PASSWORD=xxxx xxxx xxxx xxxx
+
+# Stripe
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+```
+
+### 3. Запуск через Docker Compose
 
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+docker compose up -d --build 
 ```
 
-### Создание суперпользователя
+#### Все 6 сервисов запустятся:
+
+- db — PostgreSQL  
+- redis — Redis  
+- app — Django + Gunicorn  
+- celery — Celery Worker  
+- celerybeat — Celery Beat  
+- nginx — Reverse proxy  
+
+### 4. Проверка
+
 ```bash
-python manage.py createsuperuser
+docker compose ps
+```
+#### Все контейнеры должны быть Up.  
+
+### 5. Создание суперпользователя
+
+```bash
+docker compose exec app python manage.py createsuperuser
 ```
 
-### Загрузка фикстур
+#### Введи:
+
+- Email: admin@example.com
+- Password: (свой) не менее 8 символов
+
+### 6. Открой в браузере
+
+- Сайт: http://localhost/
+- Админка: http://localhost/admin/
+- Дашборд: http://localhost/dashboard/login/
+- API: http://localhost/api/
+
+### 🎯 API Эндпоинты
+
+## 🎯 API Эндпоинты
+
+### Аутентификация
+
+| Метод | URL | Описание | Доступ |
+|-------|-----|----------|--------|
+| POST | `/api/register/` | Регистрация | Все |
+| POST | `/api/token/` | Получить JWT | Все |
+| POST | `/api/token/refresh/` | Обновить JWT | Все |
+
+### Пользователи
+
+| Метод | URL | Описание | Доступ |
+|-------|-----|----------|--------|
+| GET | `/api/users/` | Список | Admin |
+| GET | `/api/users/{id}/` | Профиль | Auth |
+| PUT/PATCH | `/api/users/{id}/` | Обновить | Владелец |
+| DELETE | `/api/users/{id}/` | Удалить | Владелец |
+
+### Курсы
+
+| Метод | URL | Описание | Доступ |
+|-------|-----|----------|--------|
+| GET | `/api/courses/` | Список | Auth |
+| POST | `/api/courses/` | Создать | Не модератор |
+| GET/PUT/PATCH/DELETE | `/api/courses/{id}/` | CRUD | Модератор/Владелец |
+
+### Уроки
+
+| Метод | URL | Описание | Доступ |
+|-------|-----|----------|--------|
+| GET | `/api/lessons/` | Список | Auth |
+| POST | `/api/lessons/create/` | Создать | Не модератор |
+| GET | `/api/lessons/{id}/` | Просмотр | Auth |
+| PUT/PATCH | `/api/lessons/{id}/update/` | Обновить | Модератор/Владелец |
+| DELETE | `/api/lessons/{id}/delete/` | Удалить | Владелец |
+
+### Подписки и платежи
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| POST | `/api/subscriptions/` | Подписка/отписка |
+| POST | `/api/payments/create/` | Создать платёж (Stripe) |
+| GET | `/api/payments/status/` | Статус платежа |
+| GET | `/api/payments/` | Список платежей |
+
+---
+
+## 📊 Дашборд сотрудника
+
+### URL: `/dashboard/login/`
+
+**Для входа используй:**
+- Email: `manager@m2bilingual.ru`
+- Password: `ManagerPass2026!`
+
+### Возможности:
+
+- ✅ **Дашборд** — статистика (всего заявок, не обработано, обработано, за сегодня)
+- ✅ **Заявки** — список с фильтрами и поиском
+- ✅ **Просмотр заявки** — отметить как обработанную
+- ❌ **НЕ видит** пользователей, платежи, курсы
+- ❌ **НЕ видит** Django Admin (если не суперпользователь)
+
+### Роли:
+
+| Роль | Доступ |
+|------|--------|
+| **Суперпользователь** | Django Admin + Дашборд + всё |
+| **Managers** (группа) | Только Дашборд и Заявки |
+| **Обычный пользователь** | Только API |
+
+---
+
+## 🧪 Тестирование
+
+### Запуск тестов
+
 ```bash
-python manage.py loaddata fixtures/data.json
-python manage.py loaddata users/fixtures/groups.json
+docker compose exec app python manage.py test
+#С покрытием
+docker compose exec app coverage run --source='.' manage.py test
+docker compose exec app coverage report
+docker compose exec app coverage html
 ```
 
-### Запуск сервера
+## 🐳 Docker
+
 ```bash
-python manage.py runserver
+# Запустить
+docker compose up -d
+
+# Пересобрать
+docker compose up -d --build
+
+# Пересоздать контейнеры
+docker compose up -d --force-recreate
+
+# Остановить
+docker compose down
+
+# Логи
+docker compose logs --tail=50 app
+
+# Зайти в контейнер
+docker compose exec app bash
+
+# Django shell
+docker compose exec app python manage.py shell
 ```
-## Структура проекта
+
+## 🚀 CI/CD
+
+### GitHub Actions
+
+При push в main запускается workflow:
+1. 🔍 Lint — flake8
+2. 🧪 Test — тесты с PostgreSQL + Redis
+3. 🐳 Build — сборка Docker-образов
+4. 🚀 Deploy — автодеплой на VPS
+
+### Секреты в GitHub
+
+SSH_HOST=  
+SSH_USER=deploy  
+SSH_KEY=Приватный SSH-ключ  
+SSH_PORT=  
+DEPLOY_DIR=  
+DJANGO_SECRET_KEY=Django SECRET_KEY  
+DB_NAME=  
+DB_USER=  
+DB_PASSWORD=  
+DB_HOST=  
+DB_PORT=  
+REDIS_URL=  
+CELERY_BROKER_URL=  
+CELERY_RESULT_BACKEND=  
+EMAIL_HOST_USER=  
+EMAIL_HOST_PASSWORD=  
+STRIPE_PUBLISHABLE_KEY=  
+STRIPE_SECRET_KEY=  
+
+## 🖥 Деплой на VPS
+
+### Требования
+
+- Ubuntu 24.04 LTS
+- Docker + Docker Compose
+- SSH-доступ
+- PostgreSQL, Redis (в Docker)
+
+## 📁 Структура проекта
+
+```text
 Djangodrf/  
-├── config/                     # Настройки проекта  
+├── .github/  
+│   └── workflows/  
+│       └── ci.yml                    # CI/CD  
+├── config/                           # Настройки Django  
+│   ├── celery.py  
 │   ├── settings.py  
 │   ├── urls.py  
 │   └── wsgi.py  
-├── users/                      # Приложение пользователей  
-│   ├── models.py              # User, Payment  
+├── core/                             # Главная страница + заявки  
+│   ├── models.py                     # ContactRequest  
+│   ├── forms.py                      # ContactForm  
+│   ├── utils.py                      # send_email_notification  
+│   ├── views.py                      # index, contact  
+│   ├── urls.py
+│   └── admin.py  
+├── dashboard/                        # Дашборд сотрудника  
+│   ├── views.py                      # index, requests_list, request_detail  
+│   ├── urls.py  
+│   ├── decorators.py                 # manager_required  
+│   └── templates/  
+│       └── dashboard/  
+│           ├── base.html  
+│           ├── login.html  
+│           ├── index.html  
+│           ├── requests.html  
+│           └── request_detail.html  
+├── lms/                              # Курсы, уроки, подписки  
+│   ├── models.py  
 │   ├── serializers.py  
 │   ├── views.py  
 │   ├── urls.py  
-│   ├── permissions.py         # IsModerator, IsOwner  
-│   └── fixtures/  
-│       └── groups.json        # Группа модераторов  
-├── lms/                       # Приложение LMS  
-│   ├── models.py              # Course, Lesson, Subscription  
+│   ├── services.py                   # Stripe  
+│   ├── tasks.py                      # Celery  
+│   ├── validators.py                 # YouTube  
+│   └── paginators.py  
+├── users/                            # Пользователи, платежи  
+│   ├── models.py                     # User, Payment  
+│   ├── permissions.py                # IsModerator, IsOwner  
 │   ├── serializers.py  
-│   ├── views.py   
+│   ├── views.py  
 │   ├── urls.py  
-│   ├── services.py            # Stripe интеграция  
-│   ├── validators.py          # YouTube валидатор  
-│   └── paginators.py          # Пагинация    
-├── fixtures/    
-│   └── data.json              # Тестовые данные  
-├── media/                     # Загруженные файлы    
-├── .env                       # Переменные окружения  
+│   └── tasks.py  
+├── templates/                        # HTML-шаблоны  
+│   └── core/  
+│       ├── index.html  
+│       └── contact.html  
+├── static/                           # Статика  
+│   ├── css/style.css  
+│   ├── js/main.js  
+│   └── images/hero-bg.jpeg  
+├── fixtures/                         # Тестовые данные  
+├── .env.sample                       # Шаблон переменных  
+├── .env.docker.sample                # Шаблон для Docker  
+├── .gitignore  
+├── Dockerfile  
+├── docker-compose.yml  
+├── nginx.conf  
 ├── manage.py  
-├── requirements.txt  
+├── requirements.txt    
+├── pyproject.toml  
 └── README.md  
-
-
-## ⚡ Celery + Redis
-
-### Запуск Celery
-
-```bash
-# Запуск worker
-celery -A config worker --loglevel=info
-
-# Запуск beat (для периодических задач)
-celery -A config beat --loglevel=info
-
-# Запуск обоих в одном терминале
-celery -A config worker --loglevel=info --beat
 ```
-## 🐳 Запуск через Docker Compose
 
-### 1. Подготовка
+## 👨‍💻 Автор
 
-```bash
-# Скопировать переменные окружения
-cp .env.docker.sample .env
+Юлия Тихонова
 
-# Отредактировать .env при необходимости
-nano .env
-# Собрать и запустить все контейнеры
-docker-compose up --build -d
-
-# Проверить статус
-docker-compose ps
-
-# Посмотреть логи
-docker-compose logs -f app celery_worker celery_beat
-docker-compose exec app python manage.py createsuperuser
-docker-compose down
-
-# Остановка с удалением томов (очистка данных)
-docker-compose down -v
-```
-## Доступ к приложению
-
-API: http://localhost:8000/api/
-Админка: http://localhost:8000/admin/
-Swagger: http://localhost:8000/api/docs/swagger/
+- GitHub: @yuliyaBarashka
+- Email: zohn12333@gmail.com
 
 
----
-## 🐳 Запуск через Docker Compose (локально)
 
-### 1. Скопируй переменные окружения
 
-```bash
-cp .env.sample .env
-```
-## 🌐 Production
 
-Приложение развёрнуто на VPS: **http://51.250.20.108/**  
-  
-- **Админка:** http://51.250.20.108/admin/  
-- **API:** http://51.250.20.108/api/  
-- **Swagger:** http://51.250.20.108/api/docs/swagger/  
-  
-### CI/CD
-  
-При push в `main` или `develop`:  
-1. Запускается линтинг (flake8)  
-2. Запускаются тесты (с PostgreSQL + Redis)  
-3. Выполняется автоматический деплой на VPS через SSH  
-  
-Секреты настраиваются в GitHub: `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT`, `DEPLOY_DIR` и др.  
+
+
+
+
+
+
