@@ -108,6 +108,7 @@ class Lesson(models.Model):
         auto_now=True,
         verbose_name='Дата обновления'
     )
+    order = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = 'Урок'

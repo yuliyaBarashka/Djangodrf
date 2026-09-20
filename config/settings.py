@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_htmx',
 
     # Third-party
     'rest_framework',
@@ -67,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -206,3 +208,7 @@ OPERATOR_FULL_NAME = os.getenv('OPERATOR_FULL_NAME', 'Тихонова Юлия 
 #OPERATOR_INN = os.getenv('OPERATOR_INN', '')
 OPERATOR_EMAIL = os.getenv('OPERATOR_EMAIL', '')
 SITE_URL = os.getenv('SITE_URL', 'http://51.250.20.108')
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'        # или '/student/' если сделаете кабинет
+LOGOUT_REDIRECT_URL = '/'

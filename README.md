@@ -31,12 +31,27 @@
 - ✅ JWT-аутентификация (access + refresh tokens)
 - ✅ Роли: пользователь, модератор, менеджер, администратор
 - ✅ Разграничение прав доступа
+- ✅ Роли: учитель (`is_teacher`), ученик (`is_student`)
+- ✅ Прогресс ученика: `LessonProgress`, `CourseProgress`
 
 ### 📚 Курсы и уроки
 - ✅ CRUD для курсов и уроков
 - ✅ Валидация YouTube-ссылок
 - ✅ Подсчёт уроков в курсе
 - ✅ Вложенный вывод уроков
+
+### 🎓 Кабинет ученика (`/student/`)
+- ✅ Список курсов, на которые подписан
+- ✅ Прогресс по каждому курсу (%)
+- ✅ Детальная страница курса с уроками
+- ✅ Отметка урока «Пройден» (HTMX, без перезагрузки)
+- ✅ Профиль со статистикой
+
+### 👨‍🏫 Кабинет учителя (`/teacher/`)
+- ✅ Свои курсы со статистикой (ученики, уроки)
+- ✅ Управление уроками: создание, редактирование (inline HTMX), удаление
+- ✅ Список учеников по курсам
+- ✅ Создание курсов
 
 ### 💳 Платежи (Stripe)
 - ✅ Создание продуктов и цен в Stripe
@@ -92,6 +107,8 @@
 | **Контейнеризация** | Docker Compose | 3.8+ |
 | **CI/CD** | GitHub Actions | — |
 | **ОС сервера** | Ubuntu | 24.04 LTS |
+| **HTMX** | 1.9.10 | Динамические интерфейсы без перезагрузки |
+
 
 ---
 
@@ -186,8 +203,6 @@ docker compose exec app python manage.py createsuperuser
 - Дашборд: http://localhost/dashboard/login/
 - API: http://localhost/api/
 
-### 🎯 API Эндпоинты
-
 ## 🎯 API Эндпоинты
 
 ### Аутентификация
@@ -234,7 +249,29 @@ docker compose exec app python manage.py createsuperuser
 | GET | `/api/payments/status/` | Статус платежа |
 | GET | `/api/payments/` | Список платежей |
 
+### HTML-страницы (кабинеты)
+
+| URL | Описание | Доступ |
+|-----|----------|--------|
+| `/login/` | Вход | Все |
+| `/logout/` | Выход | Auth |
+| `/student/` | Кабинет ученика | Student |
+| `/student/course/{id}/` | Курс ученика | Student |
+| `/student/lesson/{id}/` | Урок ученика | Student |
+| `/teacher/` | Кабинет учителя | Teacher |
+| `/teacher/course/{id}/` | Курс учителя | Teacher |
+| `/teacher/students/` | Ученики учителя | Teacher |
+| `/teacher/course/create/` | Создать курс | Teacher |
+
 ---
+## 📊 Дашборд ученика и учителя
+
+### 🧪 Тестовые пользователи
+
+| Роль | Email | Пароль |
+|------|-------|--------|
+| Учитель | teacher@m2bilingual.ru | Teacher2026! |
+| Ученик | student@m2bilingual.ru | Student2026! |
 
 ## 📊 Дашборд сотрудника
 
@@ -342,68 +379,140 @@ STRIPE_SECRET_KEY=
 ## 📁 Структура проекта
 
 ```text
-Djangodrf/  
-├── .github/  
-│   └── workflows/  
-│       └── ci.yml                    # CI/CD  
-├── config/                           # Настройки Django  
-│   ├── celery.py  
-│   ├── settings.py  
-│   ├── urls.py  
-│   └── wsgi.py  
-├── core/                             # Главная страница + заявки  
-│   ├── models.py                     # ContactRequest  
-│   ├── forms.py                      # ContactForm  
-│   ├── utils.py                      # send_email_notification  
-│   ├── views.py                      # index, contact  
+Djangodrf/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                          # CI/CD: lint → test → build → deploy
+│
+├── config/                                 # Настройки Django-проекта
+│   ├── __init__.py
+│   ├── celery.py                           # Celery app
+│   ├── settings.py                         # Настройки (INSTALLED_APPS, БД, JWT, Stripe)
+│   ├── urls.py                             # ✅ ИСПРАВЛЕН: без дублей, с users.urls_auth и lms.urls_cabinet
+│   ├── wsgi.py
+│   └── asgi.py                             # (если есть)
+│
+├── core/                                   # Главная + форма заявки
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py                            # ContactForm (с consent)
+│   ├── migrations/
+│   ├── models.py                           # ContactRequest
+│   ├── urls.py                             # /, /contact/, /privacy/, /consent/
+│   ├── utils.py                            # send_email_notification
+│   └── views.py                            # index, contact, privacy_policy, consent
+│
+├── dashboard/                              # Дашборд сотрудника
+│   ├── __init__.py
+│   ├── decorators.py                       # manager_required
+│   ├── templates/
+│   │   └── dashboard/
+│   │       ├── base.html
+│   │       ├── login.html
+│   │       ├── index.html
+│   │       ├── requests.html
+│   │       └── request_detail.html
 │   ├── urls.py
-│   └── admin.py  
-├── dashboard/                        # Дашборд сотрудника  
-│   ├── views.py                      # index, requests_list, request_detail  
-│   ├── urls.py  
-│   ├── decorators.py                 # manager_required  
-│   └── templates/  
-│       └── dashboard/  
-│           ├── base.html  
-│           ├── login.html  
-│           ├── index.html  
-│           ├── requests.html  
-│           └── request_detail.html  
-├── lms/                              # Курсы, уроки, подписки  
-│   ├── models.py  
-│   ├── serializers.py  
-│   ├── views.py  
-│   ├── urls.py  
-│   ├── services.py                   # Stripe  
-│   ├── tasks.py                      # Celery  
-│   ├── validators.py                 # YouTube  
-│   └── paginators.py  
-├── users/                            # Пользователи, платежи  
-│   ├── models.py                     # User, Payment  
-│   ├── permissions.py                # IsModerator, IsOwner  
-│   ├── serializers.py  
-│   ├── views.py  
-│   ├── urls.py  
-│   └── tasks.py  
-├── templates/                        # HTML-шаблоны  
-│   └── core/  
-│       ├── index.html  
-│       └── contact.html  
-├── static/                           # Статика  
-│   ├── css/style.css  
-│   ├── js/main.js  
-│   └── images/hero-bg.jpeg  
-├── fixtures/                         # Тестовые данные  
-├── .env.sample                       # Шаблон переменных  
-├── .env.docker.sample                # Шаблон для Docker  
-├── .gitignore  
-├── Dockerfile  
-├── docker-compose.yml  
-├── nginx.conf  
-├── manage.py  
-├── requirements.txt    
-├── pyproject.toml  
-└── README.md  
+│   └── views.py                            # index, requests_list, request_detail
+│
+├── lms/                                    # Курсы, уроки, подписки
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── migrations/
+│   ├── models.py                           # Course, Lesson, Subscription
+│   ├── paginators.py
+│   ├── serializers.py
+│   ├── services.py                         # Stripe-интеграция
+│   ├── tasks.py                            # Celery-задачи
+│   ├── urls.py                             # API: /api/courses/, /api/lessons/, ...
+│   ├── urls_cabinet.py                     # 🆕 HTML: /student/, /teacher/
+│   ├── validators.py                       # YouTube-валидация
+│   ├── views.py                            # API-views (CourseViewSet, Lesson*APIView, ...)
+│   ├── views_student.py                    # 🆕 Кабинет ученика
+│   └── views_teacher.py                    # 🆕 Кабинет учителя
+│
+├── users/                                  # Пользователи, платежи, прогресс
+│   ├── __init__.py                         # ⚠️ ДОЛЖЕН БЫТЬ ПУСТЫМ (без импортов!)
+│   ├── admin.py
+│   ├── apps.py
+│   ├── decorators.py                       # 🆕 student_required, teacher_required
+│   ├── fixtures/
+│   ├── management/
+│   ├── migrations/
+│   ├── models.py                           # User, Payment, LessonProgress, CourseProgress
+│   ├── permissions.py                      # IsModerator, IsOwner
+│   ├── serializers.py
+│   ├── tasks.py
+│   ├── tests.py
+│   ├── urls.py                             # API: /api/users/, /api/register/, ...
+│   ├── urls_auth.py                        # 🆕 HTML: /login/, /logout/
+│   └── views.py                            # ✅ login_view, logout_view + API-views
+│
+├── templates/                              # HTML-шаблоны
+│   ├── core/
+│   │   ├── index.html                      # ✅ С кнопками «Войти» / «Кабинет»
+│   │   ├── contact.html
+│   │   ├── privacy.html
+│   │   └── consent.html
+│   │
+│   ├── users/
+│   │   └── login.html                      # 🆕 Форма входа (email + password)
+│   │
+│   └── lms/
+│       ├── student/                        # 🆕 Кабинет ученика
+│       │   ├── base_student.html           # базовый шаблон с sidebar + HTMX
+│       │   ├── dashboard.html              # список курсов с прогрессом
+│       │   ├── course_detail.html          # уроки курса + отметка «пройден»
+│       │   ├── lesson_detail.html          # страница урока
+│       │   ├── profile.html                # профиль ученика
+│       │   └── partials/
+│       │       └── lesson_status.html      # HTMX-фрагмент (статус урока)
+│       │
+│       └── teacher/                        # 🆕 Кабинет учителя
+│           ├── base_teacher.html           # базовый шаблон с sidebar + HTMX
+│           ├── dashboard.html              # список своих курсов
+│           ├── course_detail.html          # уроки + ученики
+│           ├── students.html               # список учеников
+│           ├── create_course.html          # форма создания курса
+│           ├── create_lesson.html          # форма создания урока
+│           └── partials/
+│               ├── lesson_row.html         # HTMX-строка урока
+│               └── lesson_edit_form.html   # HTMX-форма редактирования
+│
+├── static/                                 # Статика
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   ├── main.js
+│   │   └── htmx.min.js                     # 🆕 (если скачан локально)
+│   └── images/
+│       └── hero-bg.jpeg
+│
+├── staticfiles/                            # collectstatic (volume)
+├── media/                                  # Загруженные файлы (volume)
+│   └── users/avatars/
+│
+├── fixtures/                               # Тестовые данные
+├── htmlcov/                                # coverage HTML
+├── venv/                                   # (не должно быть в образе)
+│
+├── .env                                    # Переменные окружения (не в git)
+├── .env.sample
+├── .env.docker.sample
+├── .gitignore
+├── Dockerfile
+├── docker-compose.yml                      # 6 сервисов
+├── nginx.conf
+├── manage.py
+├── requirements.txt
+├── pyproject.toml
+├── poetry.lock
+├── coverage.txt
+├── main.py                                 
+└──README.md
 ```
 
 ## 👨‍💻 Автор

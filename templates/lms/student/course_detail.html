@@ -1,0 +1,54 @@
+{% extends 'lms/student/base_student.html' %}
+
+{% block title %}{{ course.name }} — M2Bilingual{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'lms:student_dashboard' %}">Мои курсы</a></li>
+        <li class="breadcrumb-item active">{{ course.name }}</li>
+    </ol>
+</nav>
+
+<h1 class="page-title">{{ course.name }}</h1>
+<p class="text-muted">{{ course.description }}</p>
+
+<h2 class="mt-4 mb-3">Уроки</h2>
+
+{% if lessons_data %}
+    <div class="list-group">
+        {% for item in lessons_data %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ item.lesson.name }}</h5>
+                    <small class="text-muted">{{ item.lesson.description|truncatechars:100 }}</small>
+                </div>
+                <div>
+                    <span id="lesson-status-{{ item.lesson.id }}">
+                        {% if item.is_completed %}
+                            <span class="badge bg-success">✅ Пройден</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Не пройден</span>
+                        {% endif %}
+                    </span>
+                    
+                    <a href="{% url 'lms:student_lesson_detail' item.lesson.id %}" class="btn btn-sm btn-primary">
+                        Открыть
+                    </a>
+                    
+                    {% if not item.is_completed %}
+                        <button class="btn btn-sm btn-success"
+                                hx-post="{% url 'lms:student_lesson_complete' item.lesson.id %}"
+                                hx-target="#lesson-status-{{ item.lesson.id }}"
+                                hx-swap="innerHTML">
+                            Отметить пройденным
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">В этом курсе пока нет уроков</div>
+{% endif %}
+{% endblock %}

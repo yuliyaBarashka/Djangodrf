@@ -607,3 +607,22 @@ img {
         font-size: 14px;
     }
 }
+
+.btn--secondary {
+    background: transparent;
+    color: #333;
+    border: 2px solid #ccc;
+}
+.btn--secondary:hover {
+    background: #f5f5f5;
+}
+
+.header__login {
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 16px;
+}
+.header__login:hover {
+    color: #667eea;
+}

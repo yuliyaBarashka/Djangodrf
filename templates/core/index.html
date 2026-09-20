@@ -33,6 +33,18 @@
             </a>
             <div class="header__right">
                 <a href="tel:+70000000000" class="header__phone">8 (000) 000-00-00</a>
+
+                {% if user.is_authenticated %}
+                    {% if user.is_teacher %}
+                        <a href="{% url 'lms:teacher_dashboard' %}" class="header__login">Кабинет</a>
+                    {% elif user.is_student %}
+                         <a href="{% url 'lms:student_dashboard' %}" class="header__login">Мои курсы</a>
+                    {% endif %}
+                    <a href="{% url 'users:logout' %}" class="header__login">Выйти</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="header__login">Войти</a>
+                {% endif %}
+
                 <button class="burger" id="burger" aria-label="Меню">
                     <span></span><span></span><span></span>
                 </button>

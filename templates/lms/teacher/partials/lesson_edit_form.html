@@ -1,0 +1,22 @@
+<div class="list-group-item" id="lesson-{{ lesson.id }}">
+    <form hx-post="{% url 'lms:teacher_lesson_update' lesson.id %}"
+          hx-target="#lesson-{{ lesson.id }}"
+          hx-swap="outerHTML">
+
+        <input type="text" name="name" value="{{ lesson.name }}" class="form-control mb-2" required>
+        <textarea name="description" class="form-control mb-2" rows="2">{{ lesson.description }}</textarea>
+        <input type="url" name="video_url" value="{{ lesson.video_url }}" class="form-control mb-2" placeholder="https://www.youtube.com/watch?v=...">
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-check"></i> Сохранить
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary"
+                    hx-get="{% url 'lms:teacher_course_detail' lesson.course.id %}"
+                    hx-target="#lesson-{{ lesson.id }}"
+                    hx-swap="outerHTML">
+                <i class="fas fa-times"></i> Отмена
+            </button>
+        </div>
+    </form>
+</div>
