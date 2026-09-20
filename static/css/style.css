@@ -1,4 +1,6 @@
-/* ===== RESET & BASE ===== */
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
 * {
     margin: 0;
     padding: 0;
@@ -14,6 +16,10 @@
     --color-border: #e5e5e5;
     --color-bg: #ffffff;
     --color-bg-light: #f7f7f7;
+    --color-error: #c53030;
+    --color-error-bg: #fff5f5;
+    --color-link: #0066cc;
+    --color-link-hover: #004499;
 }
 
 body {
@@ -42,7 +48,9 @@ img {
     padding: 0 20px;
 }
 
-/* ===== TOP BAR ===== */
+/* ============================================================
+   TOP BAR
+   ============================================================ */
 .top-bar {
     background: var(--color-dark);
     color: #fff;
@@ -76,7 +84,9 @@ img {
     opacity: 1;
 }
 
-/* ===== HEADER ===== */
+/* ============================================================
+   HEADER
+   ============================================================ */
 .header {
     background: #fff;
     padding: 20px 0;
@@ -149,7 +159,9 @@ img {
     transition: all 0.3s;
 }
 
-/* ===== TABS ===== */
+/* ============================================================
+   TABS
+   ============================================================ */
 .tabs {
     background: #fff;
     border-bottom: 1px solid var(--color-border);
@@ -184,7 +196,9 @@ img {
     font-weight: 500;
 }
 
-/* ===== BREADCRUMBS ===== */
+/* ============================================================
+   BREADCRUMBS
+   ============================================================ */
 .breadcrumbs {
     padding: 20px 0;
     font-size: 14px;
@@ -204,11 +218,13 @@ img {
     margin: 0 6px;
 }
 
-/* ===== HERO ===== */
+/* ============================================================
+   HERO
+   ============================================================ */
 .hero {
     position: relative;
     min-height: 520px;
-    background-image: url('../images/hero-bg.jpeg');   /* ← путь к картинке */
+    background-image: url('../images/hero-bg.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -244,7 +260,9 @@ img {
     color: #fff;
 }
 
-/* ===== BUTTONS ===== */
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 .btn {
     display: inline-block;
     padding: 16px 40px;
@@ -270,7 +288,9 @@ img {
     box-shadow: 0 6px 20px rgba(200, 16, 46, 0.4);
 }
 
-/* ===== INFO ===== */
+/* ============================================================
+   INFO
+   ============================================================ */
 .info {
     padding: 60px 0;
 }
@@ -290,7 +310,9 @@ img {
     color: var(--color-dark);
 }
 
-/* ===== FOOTER ===== */
+/* ============================================================
+   FOOTER
+   ============================================================ */
 .footer {
     background: var(--color-dark);
     color: #fff;
@@ -303,6 +325,11 @@ img {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 40px;
     margin-bottom: 40px;
+}
+
+.footer__col {
+    display: flex;
+    flex-direction: column;
 }
 
 .footer__title {
@@ -337,54 +364,9 @@ img {
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 992px) {
-    .hero__title {
-        font-size: 48px;
-    }
-}
-
-@media (max-width: 768px) {
-    .header__phone {
-        font-size: 16px;
-    }
-
-    .hero__title {
-        font-size: 36px;
-    }
-
-    .hero {
-        min-height: 400px;
-    }
-
-    .tabs__list {
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        padding-bottom: 8px;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .info__text {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .top-bar__city {
-        font-size: 12px;
-    }
-
-    .hero__title {
-        font-size: 28px;
-    }
-
-    .btn {
-        padding: 14px 28px;
-        font-size: 14px;
-    }
-}
-
-/* ===== CONTACT SECTION ===== */
+/* ============================================================
+   CONTACT SECTION
+   ============================================================ */
 .contact-section {
     padding: 80px 0;
     background: var(--color-bg-light);
@@ -415,6 +397,9 @@ img {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
+/* ============================================================
+   FORM
+   ============================================================ */
 .form-group {
     margin-bottom: 20px;
 }
@@ -452,12 +437,36 @@ img {
     min-height: 90px;
 }
 
+/* ============================================================
+   FORM ERROR
+   ============================================================ */
 .form-error {
-    color: var(--color-primary);
+    color: var(--color-error);
     font-size: 13px;
     margin-top: 6px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
+.form-error::before {
+    content: '⚠';
+    font-size: 14px;
+}
+
+.form-input--error {
+    border-color: var(--color-error) !important;
+    background: var(--color-error-bg);
+}
+
+.form-input--error:focus {
+    box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1) !important;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
 .alert {
     padding: 16px 20px;
     border-radius: 10px;
@@ -480,7 +489,101 @@ img {
     margin-top: 10px;
 }
 
+/* ============================================================
+   CHECKBOX
+   ============================================================ */
+.form-group--checkbox {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: block !important;
+    visibility: visible !important;
+}
+
+.form-checkbox-label {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-text-light);
+    visibility: visible !important;
+}
+
+.form-checkbox {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px;
+    margin: 0;
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: static !important;
+}
+
+.form-checkbox-label a {
+    color: #0066cc;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.form-checkbox-label a:hover {
+    color: #004499;
+}
+
+/* ============================================================
+   CHECKBOX ERROR
+   ============================================================ */
+.form-checkbox--error {
+    outline: 2px solid var(--color-error);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+.form-group--checkbox .form-error {
+    margin-top: 10px;
+    margin-left: 32px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 992px) {
+    .hero__title {
+        font-size: 48px;
+    }
+}
+
 @media (max-width: 768px) {
+    .header__phone {
+        font-size: 16px;
+    }
+
+    .hero__title {
+        font-size: 36px;
+    }
+
+    .hero {
+        min-height: 400px;
+    }
+
+    .tabs__list {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .info__text {
+        font-size: 16px;
+    }
+
     .contact-form {
         padding: 24px;
     }
@@ -490,72 +593,17 @@ img {
     }
 }
 
-/* ===== CHECKBOX ===== */
-.form-group--checkbox {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
+@media (max-width: 480px) {
+    .top-bar__city {
+        font-size: 12px;
+    }
 
-.form-checkbox-label {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--color-text-light);
-}
+    .hero__title {
+        font-size: 28px;
+    }
 
-.form-checkbox {
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    flex-shrink: 0;
-    cursor: pointer;
-    accent-color: var(--color-primary);
-}
-
-.form-checkbox-label a {
-    color: #0066cc;           /* ← синий цвет */
-    text-decoration: underline;
-    transition: color 0.2s;
-}
-
-.form-checkbox-label a:hover {
-    color: #004499;           /* ← тёмно-синий при наведении */
-}
-
-.form-checkbox-label a:hover {
-    color: var(--color-primary-dark);
-}
-
-.form-group--checkbox {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.form-checkbox-label {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--color-text-light);
-}
-
-.form-checkbox {
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    flex-shrink: 0;
-    cursor: pointer;
-    accent-color: var(--color-primary);
-}
-
-.btn--primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
+    .btn {
+        padding: 14px 28px;
+        font-size: 14px;
+    }
 }

@@ -8,6 +8,8 @@ class ContactForm(forms.Form):
         widget=forms.TextInput(attrs={
             'class': 'form-input',
             'placeholder': 'Ваше имя',
+            'required': 'required',
+            'minlength': '2',
         })
     )
     phone = forms.CharField(
@@ -16,6 +18,9 @@ class ContactForm(forms.Form):
         widget=forms.TextInput(attrs={
             'class': 'form-input',
             'placeholder': '+7 (___) ___-__-__',
+            'required': 'required',
+            'pattern': r'[\d\s\+\-\(\)]{10,}',
+            'title': 'Введите корректный номер телефона (минимум 10 цифр)',
         })
     )
     email = forms.EmailField(

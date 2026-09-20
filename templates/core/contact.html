@@ -60,14 +60,14 @@
             {% endfor %}
         {% endif %}
 
-        <form method="post" class="contact-form">
+        <form method="post" class="contact-form" id="contact-form" novalidate>
             {% csrf_token %}
 
-            <!-- Honeypot для защиты от ботов -->
             <div style="display:none;">
                 {{ form.honeypot }}
             </div>
 
+            <!-- Имя -->
             <div class="form-group">
                 <label for="{{ form.name.id_for_label }}">Имя *</label>
                 {{ form.name }}
@@ -76,6 +76,7 @@
                 {% endif %}
             </div>
 
+            <!-- Телефон -->
             <div class="form-group">
                 <label for="{{ form.phone.id_for_label }}">Телефон *</label>
                 {{ form.phone }}
@@ -84,14 +85,22 @@
                 {% endif %}
             </div>
 
+            <!-- Email -->
             <div class="form-group">
                 <label for="{{ form.email.id_for_label }}">Email</label>
                 {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors.0 }}</div>
+                {% endif %}
             </div>
 
+            <!-- Сообщение -->
             <div class="form-group">
                 <label for="{{ form.message.id_for_label }}">Сообщение</label>
                 {{ form.message }}
+                {% if form.message.errors %}
+                    <div class="form-error">{{ form.message.errors.0 }}</div>
+                {% endif %}
             </div>
 
             <!-- Чекбокс согласия -->
@@ -110,8 +119,8 @@
                 {% endif %}
             </div>
 
-            <!-- Кнопка отправки -->
-            <button type="submit" class="btn btn--primary" id="submit-btn" disabled>
+            <!-- Кнопка -->
+            <button type="submit" class="btn btn--primary" id="submit-btn">
                 Отправить заявку
             </button>
         </form>
@@ -145,20 +154,132 @@
 
 <script src="{% static 'js/main.js' %}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const consentCheckbox = document.getElementById('consent-checkbox');
-        const submitBtn = document.getElementById('submit-btn');
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const nameInput = document.querySelector('input[name="name"]');
+    const phoneInput = document.querySelector('input[name="phone"]');
+    const consentCheckbox = document.getElementById('id_consent');
+    const consentGroup = consentCheckbox.closest('.form-group--checkbox');
+    const submitBtn = document.getElementById('submit-btn');
 
-        if (consentCheckbox && submitBtn) {
-            // Изначально кнопка заблокирована
-            submitBtn.disabled = !consentCheckbox.checked;
+    console.log('✅ JS загружен');
+    console.log('consentCheckbox:', consentCheckbox);
 
-            // При изменении чекбокса — разблокируем/блокируем кнопку
-            consentCheckbox.addEventListener('change', function() {
-                submitBtn.disabled = !this.checked;
-            });
+    // === Показать ошибку ===
+    function showError(input, message) {
+        const existingError = input.parentElement.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'form-error form-error--js';
+        errorDiv.textContent = message;
+        input.parentElement.appendChild(errorDiv);
+        input.classList.add('form-input--error');
+    }
+
+    function clearError(input) {
+        const existingError = input.parentElement.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+        input.classList.remove('form-input--error');
+    }
+
+    function showConsentError() {
+        const existingError = consentGroup.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'form-error form-error--js';
+        errorDiv.textContent = 'Необходимо согласие на обработку персональных данных';
+        consentGroup.appendChild(errorDiv);
+        if (consentCheckbox) consentCheckbox.classList.add('form-checkbox--error');
+    }
+
+    function clearConsentError() {
+        const existingError = consentGroup.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+        if (consentCheckbox) consentCheckbox.classList.remove('form-checkbox--error');
+    }
+
+    function isNameValid() {
+        return nameInput && nameInput.value.trim().length >= 2;
+    }
+
+    function isPhoneValid() {
+        return phoneInput && phoneInput.value.replace(/\D/g, '').length >= 10;
+    }
+
+    function isConsentChecked() {
+        return consentCheckbox && consentCheckbox.checked;
+    }
+
+    function validateName() {
+        if (!nameInput) return true;
+        const value = nameInput.value.trim();
+        if (!value) {
+            showError(nameInput, 'Пожалуйста, введите имя');
+            return false;
+        } else if (value.length < 2) {
+            showError(nameInput, 'Имя должно быть минимум 2 символа');
+            return false;
+        }
+        clearError(nameInput);
+        return true;
+    }
+
+    function validatePhone() {
+        if (!phoneInput) return true;
+        const value = phoneInput.value.trim();
+        if (!value) {
+            showError(phoneInput, 'Пожалуйста, введите номер телефона');
+            return false;
+        } else if (value.replace(/\D/g, '').length < 10) {
+            showError(phoneInput, 'Введите корректный номер телефона (минимум 10 цифр)');
+            return false;
+        }
+        clearError(phoneInput);
+        return true;
+    }
+
+    function validateConsent() {
+        if (!consentCheckbox) return true;
+        if (!consentCheckbox.checked) {
+            showConsentError();
+            return false;
+        }
+        clearConsentError();
+        return true;
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener('input', function() { clearError(nameInput); });
+        nameInput.addEventListener('blur', validateName);
+    }
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() { clearError(phoneInput); });
+        phoneInput.addEventListener('blur', validatePhone);
+    }
+
+    if (consentCheckbox) {
+        consentCheckbox.addEventListener('change', function() { clearConsentError(); });
+    }
+
+    form.addEventListener('submit', function(e) {
+        const nameOk = validateName();
+        const phoneOk = validatePhone();
+        const consentOk = validateConsent();
+
+        if (!nameOk || !phoneOk || !consentOk) {
+            e.preventDefault();
+            const firstError = document.querySelector('.form-error--js');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return false;
         }
     });
+});
 </script>
+
 </body>
 </html>
