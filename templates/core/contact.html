@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оставить заявку — M2Bilingual</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="top-bar">
+    <div class="container">
+        <div class="top-bar__left">
+            <span class="top-bar__city">Ваш город: Москва</span>
+        </div>
+        <div class="top-bar__right">
+            <a href="#" class="top-bar__link">Онлайн оплата</a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+    <div class="container">
+        <div class="header__inner">
+            <a href="/" class="logo">
+                <div class="logo__text">
+                    <span class="logo__title">M2BILINGUAL</span>
+                    <span class="logo__subtitle">ИНОСТРАННЫЕ ЯЗЫКИ ОНЛАЙН</span>
+                </div>
+            </a>
+            <div class="header__right">
+                <a href="tel:+70000000000" class="header__phone">8 (000) 000-00-00</a>
+                <button class="burger" id="burger" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ===== BREADCRUMBS ===== -->
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Главная</a> <span>/</span> <span>Оставить заявку</span>
+    </div>
+</div>
+
+<!-- ===== CONTACT FORM ===== -->
+<section class="contact-section">
+    <div class="container">
+        <h2 class="section-title">Оставить заявку</h2>
+        <p class="section-subtitle">Заполните форму, и мы свяжемся с вами в течение 15 минут</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert--success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="contact-form" id="contact-form" novalidate>
+            {% csrf_token %}
+
+            <div style="display:none;">
+                {{ form.honeypot }}
+            </div>
+
+            <!-- Имя -->
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Имя *</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="form-error">{{ form.name.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Телефон -->
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">Телефон *</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="form-error">{{ form.phone.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Сообщение -->
+            <div class="form-group">
+                <label for="{{ form.message.id_for_label }}">Сообщение</label>
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <div class="form-error">{{ form.message.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Чекбокс согласия -->
+            <div class="form-group form-group--checkbox">
+                <label class="form-checkbox-label">
+                    {{ form.consent }}
+                    <span>
+                        Я согласен(а) на
+                        <a href="{% url 'core:consent' %}" target="_blank">обработку персональных данных</a>
+                        и принимаю условия
+                        <a href="{% url 'core:privacy' %}" target="_blank">Политики конфиденциальности</a>
+                    </span>
+                </label>
+                {% if form.consent.errors %}
+                    <div class="form-error">{{ form.consent.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Кнопка -->
+            <button type="submit" class="btn btn--primary" id="submit-btn">
+                Отправить заявку
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer__inner">
+            <div class="footer__col">
+                <span class="footer__title">M2Bilingual</span>
+                <p class="footer__text">Онлайн-школа иностранных языков</p>
+            </div>
+            <div class="footer__col">
+                <span class="footer__title">Контакты</span>
+                <a href="tel:+70000000000" class="footer__link">8 (000) 000-00-00</a>
+                <a href="mailto:info@m2bilingual.ru" class="footer__link">info@m2bilingual.ru</a>
+            </div>
+            <div class="footer__col">
+                <span class="footer__title">Документы</span>
+                <a href="{% url 'core:privacy' %}" class="footer__link">Политика конфиденциальности</a>
+                <a href="{% url 'core:consent' %}" class="footer__link">Согласие на обработку ПД</a>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <span>&copy; 2026 M2Bilingual. Все права защищены.</span>
+        </div>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const nameInput = document.querySelector('input[name="name"]');
+    const phoneInput = document.querySelector('input[name="phone"]');
+    const consentCheckbox = document.getElementById('id_consent');
+    const consentGroup = consentCheckbox.closest('.form-group--checkbox');
+    const submitBtn = document.getElementById('submit-btn');
+
+    console.log('✅ JS загружен');
+    console.log('consentCheckbox:', consentCheckbox);
+
+    // === Показать ошибку ===
+    function showError(input, message) {
+        const existingError = input.parentElement.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'form-error form-error--js';
+        errorDiv.textContent = message;
+        input.parentElement.appendChild(errorDiv);
+        input.classList.add('form-input--error');
+    }
+
+    function clearError(input) {
+        const existingError = input.parentElement.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+        input.classList.remove('form-input--error');
+    }
+
+    function showConsentError() {
+        const existingError = consentGroup.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'form-error form-error--js';
+        errorDiv.textContent = 'Необходимо согласие на обработку персональных данных';
+        consentGroup.appendChild(errorDiv);
+        if (consentCheckbox) consentCheckbox.classList.add('form-checkbox--error');
+    }
+
+    function clearConsentError() {
+        const existingError = consentGroup.querySelector('.form-error--js');
+        if (existingError) existingError.remove();
+        if (consentCheckbox) consentCheckbox.classList.remove('form-checkbox--error');
+    }
+
+    function isNameValid() {
+        return nameInput && nameInput.value.trim().length >= 2;
+    }
+
+    function isPhoneValid() {
+        return phoneInput && phoneInput.value.replace(/\D/g, '').length >= 10;
+    }
+
+    function isConsentChecked() {
+        return consentCheckbox && consentCheckbox.checked;
+    }
+
+    function validateName() {
+        if (!nameInput) return true;
+        const value = nameInput.value.trim();
+        if (!value) {
+            showError(nameInput, 'Пожалуйста, введите имя');
+            return false;
+        } else if (value.length < 2) {
+            showError(nameInput, 'Имя должно быть минимум 2 символа');
+            return false;
+        }
+        clearError(nameInput);
+        return true;
+    }
+
+    function validatePhone() {
+        if (!phoneInput) return true;
+        const value = phoneInput.value.trim();
+        if (!value) {
+            showError(phoneInput, 'Пожалуйста, введите номер телефона');
+            return false;
+        } else if (value.replace(/\D/g, '').length < 10) {
+            showError(phoneInput, 'Введите корректный номер телефона (минимум 10 цифр)');
+            return false;
+        }
+        clearError(phoneInput);
+        return true;
+    }
+
+    function validateConsent() {
+        if (!consentCheckbox) return true;
+        if (!consentCheckbox.checked) {
+            showConsentError();
+            return false;
+        }
+        clearConsentError();
+        return true;
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener('input', function() { clearError(nameInput); });
+        nameInput.addEventListener('blur', validateName);
+    }
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() { clearError(phoneInput); });
+        phoneInput.addEventListener('blur', validatePhone);
+    }
+
+    if (consentCheckbox) {
+        consentCheckbox.addEventListener('change', function() { clearConsentError(); });
+    }
+
+    form.addEventListener('submit', function(e) {
+        const nameOk = validateName();
+        const phoneOk = validatePhone();
+        const consentOk = validateConsent();
+
+        if (!nameOk || !phoneOk || !consentOk) {
+            e.preventDefault();
+            const firstError = document.querySelector('.form-error--js');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return false;
+        }
+    });
+});
+</script>
+
+</body>
+</html>

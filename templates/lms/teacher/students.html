@@ -1,0 +1,32 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}Ученики — M2Bilingual{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Мои ученики</h1>
+
+{% if students %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Имя</th>
+                <th>Город</th>
+                <th>Курсов</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.first_name }} {{ student.last_name }}</td>
+                    <td>{{ student.city|default:"—" }}</td>
+                    <td>{{ student.courses_count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">У вас пока нет учеников</div>
+{% endif %}
+{% endblock %}

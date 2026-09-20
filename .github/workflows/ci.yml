@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, develop]
   pull_request:
-    branches: [main,develop]
+    branches: [main, develop]
 
 jobs:
   # ============================================================
@@ -13,34 +13,25 @@ jobs:
   lint:
     name: 🔍 Lint Code
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Check out code
-        uses: actions/checkout@v3
-
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: 📦 Install dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install flake8
-
-      - name: 🔍 Run Flake8
-        run: |
+      - run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   # ============================================================
-  # ЭТАП 2: ТЕСТЫ (с PostgreSQL)
+  # ЭТАП 2: ТЕСТЫ
   # ============================================================
   test:
     name: 🧪 Run Tests
     runs-on: ubuntu-latest
     needs: lint
-
     services:
       postgres:
         image: postgres:15
@@ -55,7 +46,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
       redis:
         image: redis:7
         ports:
@@ -65,30 +55,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
-      - name: 📥 Check out code
-        uses: actions/checkout@v3
-
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: 💾 Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: 📦 Install dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: 🗄️ Run migrations
+      - name: Run migrations
         env:
           SECRET_KEY: test-secret-key
           DEBUG: True
@@ -99,8 +74,7 @@ jobs:
           POSTGRES_PORT: 5432
           REDIS_URL: redis://localhost:6379/0
         run: python manage.py migrate
-
-      - name: 🧪 Run tests
+      - name: Run tests
         env:
           SECRET_KEY: test-secret-key
           DEBUG: True
@@ -113,17 +87,31 @@ jobs:
         run: python manage.py test
 
   # ============================================================
-  # ЭТАП 3: ДЕПЛОЙ
+  # ЭТАП 3: СБОРКА DOCKER-ОБРАЗОВ
+  # ============================================================
+  build:
+    name: 🐳 Build Docker Images
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t m2bilingual-app:latest .
+      - name: Test docker-compose config
+        run: |
+          cp .env.sample .env
+          docker compose config
+
+  # ============================================================
+  # ЭТАП 4: ДЕПЛОЙ через Docker
   # ============================================================
   deploy:
     name: 🚀 Deploy to Server
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
     steps:
-      - name: 📥 Check out code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: 🔑 Set up SSH
         uses: webfactory/ssh-agent@v0.10.0
@@ -134,48 +122,25 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
 
-
-      - name: 📤 Copy project files to server
+      - name: 📤 Copy files to server
         run: |
           rsync -avz --exclude '__pycache__' \
                       --exclude 'venv' \
                       --exclude '.env' \
                       --exclude 'db.sqlite3' \
                       --exclude '.git' \
+                      --exclude '.idea' \
                       . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_DIR }}
 
-      - name: 📦 Install dependencies on server
+      - name: 🐳 Deploy with Docker Compose
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd ${{ secrets.DEPLOY_DIR }}
-            source venv/bin/activate
-            pip install -r requirements.txt
-          EOF
-
-      - name: 🗄️ Apply migrations on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd ${{ secrets.DEPLOY_DIR }}
-            source venv/bin/activate
-            python manage.py migrate
-          EOF
-
-      - name: 📁 Collect static files on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd ${{ secrets.DEPLOY_DIR }}
-            source venv/bin/activate
-            python manage.py collectstatic --noinput
-          EOF
-
-      - name: 🔄 Restart application
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            sudo systemctl restart lms
-            sudo systemctl restart celery
-            sudo systemctl restart celerybeat
+            docker compose down --remove-orphans
+            docker compose up -d --build
+            sleep 10
+            docker compose ps
           EOF
 
       - name: ✅ Deployment successful

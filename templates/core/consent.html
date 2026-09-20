@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Согласие на обработку персональных данных — M2Bilingual</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .legal-page {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 20px;
+            line-height: 1.7;
+            color: var(--color-text);
+        }
+        .legal-page h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: var(--color-dark);
+        }
+        .legal-page p, .legal-page li {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .legal-page ul {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+        .legal-page strong {
+            color: var(--color-dark);
+        }
+        .consent-box {
+            background: #f7f7f7;
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid var(--color-primary);
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="header__inner">
+            <a href="/" class="logo">
+                <div class="logo__text">
+                    <span class="logo__title">M2BILINGUAL</span>
+                    <span class="logo__subtitle">ИНОСТРАННЫЕ ЯЗЫКИ ОНЛАЙН</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Главная</a> <span>/</span> <span>Согласие на обработку ПД</span>
+    </div>
+</div>
+
+<main class="legal-page">
+    <h1>Согласие на обработку персональных данных</h1>
+
+    <div class="consent-box">
+        <p>Настоящим я, свободно, своей волей и в своем интересе выражаю безусловное согласие оператору <strong>{{ operator_name }}</strong> (далее — Оператор), на обработку моих персональных данных со следующими условиями:</p>
+    </div>
+
+    <p><strong>Цель обработки:</strong> обратная связь, ответы на запросы, консультирование, предоставление информации о материалах сайта и взаимодействие по гражданско-правовым сделкам.</p>
+
+    <p><strong>Перечень персональных данных:</strong> имя, номер телефона, адрес электронной почты (e-mail).</p>
+
+    <p><strong>Перечень действий с персональными данными:</strong> сбор, запись, систематизация, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, передача (предоставление, доступ) исключительно в рамках законодательства РФ, обезличивание, блокирование, удаление, уничтожение.</p>
+
+    <p><strong>Способ обработки:</strong> смешанная (с использованием средств автоматизации и без них).</p>
+
+    <p><strong>Срок действия:</strong> до достижения целей обработки либо до момента отзыва настоящего согласия.</p>
+
+    <p>Согласие может быть отозвано в любое время путем направления электронного письма на адрес: <strong>{{ operator_email }}</strong>.</p>
+
+    <p style="margin-top: 32px;">
+        <a href="/" class="btn btn--primary">← Вернуться на главную</a>
+    </p>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer__bottom">
+            <span>&copy; 2026 M2Bilingual. Все права защищены.</span>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

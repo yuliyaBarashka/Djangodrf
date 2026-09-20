@@ -35,10 +35,15 @@ class User(AbstractUser):
     city = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to='users/avatars/', blank=True, null=True)
 
+    # Роли
+    is_teacher = models.BooleanField(default=False, verbose_name='Учитель')
+    is_student = models.BooleanField(default=True, verbose_name='Ученик')
+
+    # Для учителя
+    bio = models.TextField(blank=True, null=True, verbose_name='О себе')
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-
-    objects = CustomUserManager()
 
     def __str__(self):
         return self.email
@@ -79,3 +84,53 @@ class Payment(models.Model):
         verbose_name = 'Платеж'
         verbose_name_plural = 'Платежи'
         ordering = ['-payment_date']
+
+
+class LessonProgress(models.Model):
+    """Прогресс ученика по уроку"""
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='progress',
+        limit_choices_to={'is_student': True}
+    )
+    lesson = models.ForeignKey(
+        'lms.Lesson',
+        on_delete=models.CASCADE,
+        related_name='progress'
+    )
+    is_completed = models.BooleanField(default=False, verbose_name='Пройден')
+    completed_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата завершения')
+
+    class Meta:
+        unique_together = ('student', 'lesson')
+        verbose_name = 'Прогресс урока'
+        verbose_name_plural = 'Прогресс уроков'
+
+    def __str__(self):
+        return f"{self.student.email} — {self.lesson.name}"
+
+
+class CourseProgress(models.Model):
+    """Прогресс ученика по курсу"""
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='course_progress',
+        limit_choices_to={'is_student': True}
+    )
+    course = models.ForeignKey(
+        'lms.Course',
+        on_delete=models.CASCADE,
+        related_name='progress'
+    )
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('student', 'course')
+        verbose_name = 'Прогресс курса'
+        verbose_name_plural = 'Прогресс курсов'
+
+    def __str__(self):
+        return f"{self.student.email} — {self.course.name}"

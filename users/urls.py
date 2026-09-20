@@ -4,8 +4,11 @@ from users.views import (
     UserRegistrationView, UserProfileView, UserListView,
     CustomTokenObtainPairView, PaymentListAPIView
 )
+from users import views
 
 urlpatterns = [
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

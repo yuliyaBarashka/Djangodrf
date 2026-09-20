@@ -1,0 +1,33 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}Создать урок — {{ course.name }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Добавить урок в "{{ course.name }}"</h1>
+
+<div class="card-stat" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Название урока</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Описание</label>
+            <textarea name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ссылка на видео (YouTube)</label>
+            <input type="url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Создать урок
+        </button>
+        <a href="{% url 'lms:teacher_course_detail' course.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

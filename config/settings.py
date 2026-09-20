@@ -12,6 +12,27 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'http://51.250.20.108',
+    'https://51.250.20.108',
+    'http://m2bilingual.ru',
+    'https://m2bilingual.ru',
+    'http://www.m2bilingual.ru',
+    'https://www.m2bilingual.ru',
+    'http://localhost',
+    'http://localhost:8000',
+    'http://127.0.0.1',
+    'http://127.0.0.1:8000',
+]
+
+# Cookies
+CSRF_COOKIE_SECURE = False  # True только если HTTPS
+SESSION_COOKIE_SECURE = False  # True только если HTTPS
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -20,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_htmx',
 
     # Third-party
     'rest_framework',
@@ -33,6 +55,8 @@ INSTALLED_APPS = [
     # Local
     'users',
     'lms',
+    'core',
+    'dashboard',
 ]
 
 # ===== MIDDLEWARE =====
@@ -44,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -51,7 +76,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,7 +124,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
@@ -164,13 +189,26 @@ CELERY_CACHE_BACKEND = 'default'
 # Celery Beat settings
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-# Email settings for notifications
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
-# For production use:
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = 'noreply@lms.com'
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER', 'noreply@m2bilingual.ru')
+
+# VK
+VK_GROUP_ID = os.getenv('VK_GROUP_ID', '')
+VK_GROUP_TOKEN = os.getenv('VK_GROUP_TOKEN', '')
+VK_ADMIN_ID = os.getenv('VK_ADMIN_ID', '')
+
+# Оператор персональных данных
+OPERATOR_FULL_NAME = os.getenv('OPERATOR_FULL_NAME', 'Тихонова Юлия Александровна')
+#OPERATOR_INN = os.getenv('OPERATOR_INN', '')
+OPERATOR_EMAIL = os.getenv('OPERATOR_EMAIL', '')
+SITE_URL = os.getenv('SITE_URL', 'http://51.250.20.108')
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'        # или '/student/' если сделаете кабинет
+LOGOUT_REDIRECT_URL = '/'

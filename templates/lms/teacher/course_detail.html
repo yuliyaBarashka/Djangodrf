@@ -1,0 +1,56 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}{{ course.name }} — M2Bilingual{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'lms:teacher_dashboard' %}">Мои курсы</a></li>
+        <li class="breadcrumb-item active">{{ course.name }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title">{{ course.name }}</h1>
+    <a href="{% url 'lms:teacher_create_lesson' course.id %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Добавить урок
+    </a>
+</div>
+
+<p class="text-muted">{{ course.description }}</p>
+
+<!-- Уроки -->
+<h2 class="mt-4 mb-3">Уроки ({{ lessons.count }})</h2>
+
+<div id="lessons-list">
+    {% for lesson in lessons %}
+        {% include 'lms/teacher/partials/lesson_row.html' with lesson=lesson %}
+    {% endfor %}
+</div>
+
+<!-- Ученики -->
+<h2 class="mt-4 mb-3">Ученики ({{ students.count }})</h2>
+
+{% if students %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Имя</th>
+                <th>Пройдено уроков</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.first_name }} {{ student.last_name }}</td>
+                    <td>{{ student.completed_lessons }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">У этого курса пока нет учеников</div>
+{% endif %}
+{% endblock %}
