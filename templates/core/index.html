@@ -53,16 +53,42 @@
     </div>
 </header>
 
-<!-- ===== TABS ===== -->
+<!-- ===== TABS ===== --><!-- ===== TABS ===== -->
 <nav class="tabs">
     <div class="container">
         <ul class="tabs__list">
-            <li><a href="#" class="tabs__link">Детям</a></li>
-            <li><a href="#" class="tabs__link">Взрослым</a></li>
-            <li><a href="#" class="tabs__link">Преподавателям</a></li>
-            <li><a href="#" class="tabs__link">Компаниям</a></li>
-            <li><a href="#" class="tabs__link">Кембриджские экзамены</a></li>
-            <li><a href="#" class="tabs__link tabs__link--active">Онлайн обучение</a></li>
+
+            <!-- ЯЗЫКИ -->
+            <li class="tabs__item tabs__item--dropdown">
+                <a href="#" class="tabs__link">Языки ▾</a>
+                <ul class="tabs__dropdown">
+                    <li><a href="#" class="tabs__dropdown-link">Английский</a></li>
+                    <li><a href="#" class="tabs__dropdown-link">Немецкий</a></li>
+                </ul>
+            </li>
+
+            <!-- ЭКЗАМЕНЫ -->
+            <li class="tabs__item tabs__item--dropdown">
+                <a href="#" class="tabs__link">Экзамены ▾</a>
+                <ul class="tabs__dropdown tabs__dropdown--wide">
+                    <li class="tabs__dropdown-header">Английский</li>
+                    <li><a href="#" class="tabs__dropdown-link">IELTS</a></li>
+                    <li><a href="#" class="tabs__dropdown-link">TOEFL</a></li>
+
+                    <li class="tabs__dropdown-header">Немецкий</li>
+                    <li><a href="#" class="tabs__dropdown-link">TestDaF — для университета</a></li>
+                    <li><a href="#" class="tabs__dropdown-link">DSH — для университета</a></li>
+                    <li><a href="#" class="tabs__dropdown-link">Goethe-Zertifikat — работа, виза</a></li>
+                    <li><a href="#" class="tabs__dropdown-link">telc — работа, виза</a></li>
+                    <li><a href="#" class="tabs__dropdown-link">ÖSD — жизнь в Австрии</a></li>
+                </ul>
+            </li>
+
+            <!-- ДЕТЯМ -->
+            <li class="tabs__item">
+                <a href="{% url 'core:kids' %}" class="tabs__link">Детям</a>
+            </li>
+
         </ul>
     </div>
 </nav>
