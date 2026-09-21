@@ -8,4 +8,5 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('privacy/', views.privacy_policy, name='privacy'),
     path('consent/', views.consent, name='consent'),
+    path('kids/', views.kids_view, name='kids'),        # ← новый
 ]

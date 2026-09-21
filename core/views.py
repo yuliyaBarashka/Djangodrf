@@ -70,3 +70,8 @@ def consent(request):
         'site_url': settings.SITE_URL,
     }
     return render(request, 'core/consent.html', context)
+
+
+def kids_view(request):
+    """Страница M2Bilingual Kids (заглушка)"""
+    return render(request, 'core/kids.html')
