@@ -1,0 +1,44 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}Мои курсы — M2Bilingual{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Кабинет учителя</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card-stat">
+            <div class="card-stat__label">Мои курсы</div>
+            <div class="card-stat__value">{{ total_courses }}</div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-3">Мои курсы</h2>
+
+{% if courses_data %}
+    <div class="row">
+        {% for item in courses_data %}
+            <div class="col-md-6 mb-4">
+                <div class="card-stat">
+                    <h3>{{ item.course.name }}</h3>
+                    <p class="text-muted">{{ item.course.description|truncatechars:100 }}</p>
+
+                    <div class="d-flex gap-3 mt-3">
+                        <span><i class="fas fa-book"></i> {{ item.lessons_count }} уроков</span>
+                        <span><i class="fas fa-users"></i> {{ item.students_count }} учеников</span>
+                    </div>
+
+                    <a href="{% url 'lms:teacher_course_detail' item.course.id %}" class="btn btn-primary mt-3">
+                        Управлять
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        У вас пока нет курсов. <a href="{% url 'lms:teacher_create_course' %}">Создать первый курс</a>
+    </div>
+{% endif %}
+{% endblock %}

@@ -50,7 +50,7 @@ def send_email_notification(name, phone, email, message):
             subject=subject,
             message=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['zohn12333@gmail.com' , 'ut122235@gmail.com'],
+            recipient_list=['m2bilingual@gmail.com'],
             fail_silently=False,
         )
         return True

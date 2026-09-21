@@ -1,0 +1,16 @@
+{% extends 'lms/student/base_student.html' %}
+
+{% block title %}Профиль — M2Bilingual{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Профиль</h1>
+
+<div class="card-stat" style="max-width: 500px;">
+    <p><strong>Email:</strong> {{ request.user.email }}</p>
+    <p><strong>Имя:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+    <p><strong>Город:</strong> {{ request.user.city|default:"—" }}</p>
+    <p><strong>Телефон:</strong> {{ request.user.phone|default:"—" }}</p>
+    <hr>
+    <p><strong>Пройдено уроков:</strong> {{ total_completed }}</p>
+</div>
+{% endblock %}

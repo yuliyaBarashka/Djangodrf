@@ -4,6 +4,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+
 from users.models import User, Payment
 from users.serializers import (
     UserRegistrationSerializer,
@@ -14,6 +19,48 @@ from users.serializers import (
 )
 
 
+# ============================================================
+# HTML-авторизация (для кабинетов ученика/учителя)
+# ============================================================
+
+
+def login_view(request):
+    """Вход для учеников и учителей"""
+    if request.user.is_authenticated:
+        if request.user.is_teacher:
+            return redirect('lms:teacher_dashboard')
+        if request.user.is_student:
+            return redirect('lms:student_dashboard')
+        return redirect('/')
+
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            if user.is_teacher:
+                return redirect('lms:teacher_dashboard')
+            if user.is_student:
+                return redirect('lms:student_dashboard')
+            return redirect('/')
+        else:
+            messages.error(request, 'Неверный email или пароль')
+
+    return render(request, 'users/login.html')
+
+
+def logout_view(request):
+    """Выход"""
+    logout(request)
+    return redirect('/')
+
+
+# ============================================================
+# API: Регистрация и профиль
+# ============================================================
+
 class UserRegistrationView(generics.CreateAPIView):
     """Регистрация пользователя (доступно без авторизации)"""
     queryset = User.objects.all()
@@ -21,7 +68,7 @@ class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class UserProfileView(generics.RetrieveUpdateDestroyAPIView):  # ✅ Добавлен Destroy
+class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
     """
     Просмотр, редактирование и удаление профиля пользователя
     - Просмотр любого профиля (с ограничением данных для чужих)
@@ -54,7 +101,6 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):  # ✅ Добав�
         if self.request.method == 'GET':
             obj = self.get_object()
             if obj.pk != self.request.user.pk:
-                # Если смотрим чужой профиль - используем публичный сериализатор
                 return UserPublicProfileSerializer(*args, **kwargs)
         return super().get_serializer(*args, **kwargs)
 
@@ -66,10 +112,18 @@ class UserListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
 
 
+# ============================================================
+# API: JWT-токены
+# ============================================================
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     """Кастомный эндпоинт для получения токенов"""
     permission_classes = [AllowAny]
 
+
+# ============================================================
+# API: Платежи
+# ============================================================
 
 class PaymentListAPIView(generics.ListAPIView):
     """Список платежей с фильтрацией и сортировкой"""
