@@ -54,7 +54,7 @@ services:
     container_name: m2bilingual_app
     restart: always
     volumes:
-      - .:/app
+      - ./.env:/app/.env  
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     env_file: .env
