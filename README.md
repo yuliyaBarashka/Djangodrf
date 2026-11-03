@@ -1,200 +1,138 @@
-# 🎓 M2Bilingual — LMS платформа онлайн-школы иностранных языков
+# 🎓 M2Bilingual — LMS for an Online Language School
 
 [![Django](https://img.shields.io/badge/Django-6.0.8-green.svg)](https://www.djangoproject.com/)
 [![DRF](https://img.shields.io/badge/DRF-3.18.0-red.svg)](https://www.django-rest-framework.org/)
 [![JWT](https://img.shields.io/badge/JWT-SimpleJWT-blue.svg)](https://django-rest-framework-simplejwt.readthedocs.io/)
 [![Celery](https://img.shields.io/badge/Celery-5.6.3-brightgreen.svg)](https://docs.celeryq.dev/)
 [![Stripe](https://img.shields.io/badge/Stripe-Integration-purple.svg)](https://stripe.com)
+[![HTMX](https://img.shields.io/badge/HTMX-1.9.10-blueviolet.svg)](https://htmx.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)](https://docs.docker.com/compose/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-black.svg)](https://github.com/features/actions)
-[![HTMX](https://img.shields.io/badge/HTMX-1.9.10-blueviolet.svg)](https://htmx.org/)
 
-## 📋 Описание
+## 📋 Description
 
-**M2Bilingual** — LMS (Learning Management System) для онлайн-школы иностранных языков.
-Полноценный бэкенд с REST API, JWT-авторизацией, Docker-контейнеризацией, CI/CD и автоматическим деплоем на VPS.
+**M2Bilingual** is a full-featured Learning Management System (LMS) designed for an online language school. 
+The project includes a REST API, JWT authentication, a student/teacher dashboard with HTMX, online tests, homework checking, and Dockerized deployment.
 
 **Live Demo:**
-- 🌐 **Сайт:** http://51.250.20.108/
-- 🎓 **Главная:** http://51.250.20.108/
-- 📝 **Форма заявки:** http://51.250.20.108/contact/
-- 🔐 **Дашборд сотрудника:** http://51.250.20.108/dashboard/login/
+- 🌐 **Website:** http://51.250.20.108/
+- 🎓 **Home:** http://51.250.20.108/
+- 📝 **Contact Form:** http://51.250.20.108/contact/
+- 🧑‍🏫 **Teacher Cabinet:** http://51.250.20.108/teacher/
+- 🧑‍🎓 **Student Cabinet:** http://51.250.20.108/student/
+- 🔐 **Staff Dashboard:** http://51.250.20.108/dashboard/login/
 - ⚙️ **Django Admin:** http://51.250.20.108/admin/
 - 📚 **API Swagger:** http://51.250.20.108/api/docs/swagger/
 - 📖 **API ReDoc:** http://51.250.20.108/api/docs/redoc/
 
 ---
 
-## 🚀 Основные возможности
+## 🚀 Core Features
 
-### 👤 Пользователи
-- ✅ Кастомная модель User с авторизацией по email
-- ✅ JWT-аутентификация (access + refresh tokens)
-- ✅ Роли: пользователь, модератор, менеджер, администратор
-- ✅ Разграничение прав доступа
-- ✅ Роли: учитель (`is_teacher`), ученик (`is_student`)
-- ✅ Прогресс ученика: `LessonProgress`, `CourseProgress`
-- ✅ HTML-авторизация (`/login/`, `/logout/`) с редиректом по ролям
+### 👤 Users & Auth
+- ✅ Custom User model with email authentication (no username).
+- ✅ JWT Authentication (access + refresh tokens).
+- ✅ Roles: Student (`is_student`), Teacher (`is_teacher`), Staff, Admin.
+- ✅ Role-based HTML authentication (`/login/`, `/logout/`) with automatic redirects.
+- ✅ Access control decorators: `student_required`, `teacher_required`.
 
-### 📚 Курсы и уроки
-- ✅ CRUD для курсов и уроков
-- ✅ Валидация YouTube-ссылок
-- ✅ Подсчёт уроков в курсе
-- ✅ Вложенный вывод уроков
+### 📚 Courses & Lessons
+- ✅ Full CRUD for courses and lessons.
+- ✅ Course pricing and publication status (`is_published`).
+- ✅ YouTube video validation and automatic embed conversion.
+- ✅ Lesson attachments: Video, Lecture Notes (PDF), Workbook (PDF).
+- ✅ Lesson ordering.
 
-### 🧭 Навигация на главной
+### 🧑‍🏫 Teacher Cabinet (`/teacher/`)
+- ✅ Dashboard with course and student statistics.
+- ✅ Create courses and lessons.
+- ✅ Lesson preview mode (👁 see the lesson exactly as a student sees it).
+- ✅ **Online Test Builder:** Create single-choice, multiple-choice, text, and file-upload questions.
+- ✅ **Submissions List:** View and grade student work.
+- ✅ **Manual Grading:** Assign points for each question, add comments, and set the final score.
+- ✅ **Progress Management:** Toggle lesson completion status for each student.
+- ✅ HTMX for inline lesson editing and deletion (no page reloads).
 
-- ✅ Кнопка **Языки** (dropdown: Английский, Немецкий)
-- ✅ Кнопка **Экзамены** (dropdown: IELTS, TOEFL, TestDaF, DSH, Goethe-Zertifikat, telc, ÖSD)
-- ✅ Кнопка **Детям** → `/kids/`
-- ✅ Dropdown работает на CSS hover (без JS)
-- ✅ Кнопки «Войти» / «Кабинет» / «Выйти» в шапке
+### 🧑‍🎓 Student Cabinet (`/student/`)
+- ✅ Dashboard with subscribed courses and overall progress.
+- ✅ Course detail view with a list of lessons.
+- ✅ Lesson view: Video player, PDF downloads, and workbook submission.
+- ✅ **Online Tests:** Take tests with various question types (radio, checkbox, text, file).
+- ✅ **Results:** View status, teacher's comments, and final score after checking.
+- ✅ Public course preview page (`/courses/<id>/`) before purchase.
 
-### 🎓 Кабинеты ученика и учителя (HTML)
+### 💳 Payments (Stripe)
+- ✅ Create Stripe products and prices.
+- ✅ Checkout sessions for course payments.
+- ✅ Payment status tracking.
 
-#### Кабинет ученика (`/student/`)
+### 📨 Contact Form
+- ✅ Separate page `/contact/`.
+- ✅ Email notifications (Gmail SMTP) and VK messages.
+- ✅ Saves to DB (`ContactRequest`).
+- ✅ Honeypot spam protection.
 
-- ✅ Список курсов, на которые подписан ученик
-- ✅ Прогресс по каждому курсу (%, пройдено/всего уроков)
-- ✅ Детальная страница курса со списком уроков
-- ✅ Страница урока с встроенным YouTube-видео
-- ✅ Отметка урока «Пройден» через HTMX (без перезагрузки)
-- ✅ Профиль со статистикой
-
-#### Кабинет учителя (`/teacher/`)
-
-- ✅ Список своих курсов со статистикой (ученики, уроки)
-- ✅ Детальная страница курса с уроками и учениками
-- ✅ Создание курсов
-- ✅ Создание уроков
-- ✅ Инлайн-редактирование урока через HTMX
-- ✅ Удаление урока через HTMX
-- ✅ Список учеников по всем курсам учителя
-
-### 🎨 HTMX-интерфейсы
-
-- ✅ Отметка урока «Пройден» (ученик)
-- ✅ Инлайн-редактирование урока (учитель)
-- ✅ Удаление урока (учитель)
-- ✅ Без перезагрузки страницы
-
-### 💳 Платежи (Stripe)
-- ✅ Создание продуктов и цен в Stripe
-- ✅ Checkout-сессии для оплаты
-- ✅ Сохранение статуса платежа
-
-### 📨 Форма заявки
-- ✅ Отдельная страница `/contact/`
-- ✅ Отправка на **Email** (Gmail SMTP)
-- ✅ Сохранение в БД (`ContactRequest`)
-- ✅ Honeypot-защита от ботов
-- ✅ Админ-панель для менеджеров
-
-### 📊 Дашборд сотрудника
-- ✅ Отдельная панель `/dashboard/`
-- ✅ Кастомный вход для менеджеров
-- ✅ Статистика заявок (всего, обработано, новых, за сегодня)
-- ✅ Список заявок с фильтрами и поиском
-- ✅ Просмотр и отметка «Обработано»
-- ✅ Красивый UI (Electric style)
-
-### ⚡ Фоновые задачи (Celery)
-- ✅ Асинхронная отправка уведомлений
-- ✅ Периодическая блокировка неактивных пользователей
-- ✅ Celery Beat для расписания
+### ⚡ Background Tasks (Celery)
+- ✅ Asynchronous email notifications.
+- ✅ Periodic blocking of inactive users.
+- ✅ Celery Beat for scheduling.
 
 ### 🐳 DevOps
-- ✅ Docker Compose (6 сервисов)
-- ✅ Nginx reverse proxy
-- ✅ CI/CD на GitHub Actions (lint → test → build → deploy)
-- ✅ Автоматический деплой на VPS
+- ✅ Docker Compose (6 services).
+- ✅ Nginx reverse proxy.
+- ✅ CI/CD via GitHub Actions (lint → test → build → deploy).
+- ✅ Automated deployment to VPS.
 
-### 📖 Документация
-- ✅ Swagger UI (OpenAPI 3.0)
-- ✅ ReDoc
-- ✅ Полное описание всех эндпоинтов
+### 📖 Documentation
+- ✅ Swagger UI (OpenAPI 3.0).
+- ✅ ReDoc.
+- ✅ Full endpoint descriptions.
 
 ---
 
-## 🛠 Технологический стек
+## 🛠 Tech Stack
 
-| Компонент | Технология | Версия |
+| Component | Technology | Version |
 |-----------|-----------|--------|
 | **Backend** | Django | 6.0.8 |
 | **API** | Django REST Framework | 3.18.0 |
-| **Аутентификация** | SimpleJWT | 5.5.1 |
-| **Документация** | drf-spectacular | 0.30.0 |
-| **Платежи** | Stripe | 15.5.0 |
-| **Очереди** | Celery | 5.6.3 |
-| **Брокер** | Redis | 8.1.0 |
-| **БД** | PostgreSQL | 15 |
-| **Веб-сервер** | Nginx | Alpine |
-| **Контейнеризация** | Docker Compose | 3.8+ |
+| **Auth** | SimpleJWT | 5.5.1 |
+| **Frontend** | HTMX + Bootstrap 5 | 1.9.10 |
+| **Docs** | drf-spectacular | 0.30.0 |
+| **Payments** | Stripe | 15.5.0 |
+| **Tasks** | Celery + Redis | 5.6.3 / 8.1.0 |
+| **Database** | PostgreSQL | 15 |
+| **Web Server** | Nginx | Alpine |
+| **Container** | Docker Compose | 3.8+ |
 | **CI/CD** | GitHub Actions | — |
-| **ОС сервера** | Ubuntu | 24.04 LTS |
-| **HTMX** | 1.9.10 | Динамические интерфейсы без перезагрузки |
-
+| **OS** | Ubuntu | 24.04 LTS |
 
 ---
 
-## 📦 Установка и запуск
+## 📦 Installation & Setup
 
-### Требования
-
+### Requirements
 - Python 3.12+
 - Docker Desktop
 - Git
 
-### 1. Клонирование репозитория
-
+### 1. Clone the repository
 ```bash
 git clone https://github.com/yuliyaBarashka/Djangodrf.git
 cd Djangodrf
 ```
 
-### 2. Создание .env
+### 2. Create .env
 
-#### Заполни .env:
-env:
-```dotenv
-# Django
-SECRET_KEY=your-secret-key-here
-DEBUG=False
-ALLOWED_HOSTS=51.250.20.108,m2bilingual.ru,www.m2bilingual.ru,localhost,127.0.0.1
+#### Copy .env.sample and fill in your credentials.
 
-# CSRF
-CSRF_TRUSTED_ORIGINS=http://localhost,http://localhost:8000,http://127.0.0.1,http://127.0.0.1:8000,http://51.250.20.108,http://m2bilingual.ru,http://www.m2bilingual.ru
-CSRF_COOKIE_SECURE=False
-SESSION_COOKIE_SECURE=False
-
-# Database
-POSTGRES_DB=m2bilingual_db
-POSTGRES_USER=m2bilingual_user
-POSTGRES_PASSWORD=StrongPassword2026!
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-
-# Redis
-REDIS_URL=redis://redis:6379/0
-CELERY_BROKER_URL=redis://redis:6379/0
-CELERY_RESULT_BACKEND=redis://redis:6379/0
-
-# Email (Gmail)
-EMAIL_HOST_USER=zohn12333@gmail.com
-EMAIL_HOST_PASSWORD=xxxx xxxx xxxx xxxx
-
-# Stripe
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-```
-
-### 3. Запуск через Docker Compose
+### 3. Run with Docker Compose
 
 ```bash
 docker compose up -d --build 
 ```
 
-#### Все 6 сервисов запустятся:
+#### All 6 services should be started:
 
 - db — PostgreSQL  
 - redis — Redis  
@@ -203,158 +141,146 @@ docker compose up -d --build
 - celerybeat — Celery Beat  
 - nginx — Reverse proxy  
 
-### 4. Проверка
+### 4. Check containers
 
 ```bash
 docker compose ps
 ```
-#### Все контейнеры должны быть Up.  
+#### All 6 containers should be Up.
 
-### 5. Создание суперпользователя
+### 5. Create a superuser
 
 ```bash
 docker compose exec app python manage.py createsuperuser
 ```
 
-#### Введи:
+#### Fill:
 
 - Email: admin@example.com
-- Password: (свой) не менее 8 символов
+- Password: (your) min 8 item
 
-### 6. Открой в браузере
+### 6. Open in browser
 
-- Сайт: http://localhost/
-- Админка: http://localhost/admin/
-- Дашборд: http://localhost/dashboard/login/
+- Website: http://localhost/
+- Admin: http://localhost/admin/
+- Dashboard: http://localhost/dashboard/login/
 - API: http://localhost/api/
+- Swagger: http://localhost/api/docs/swagger/
 
-## 🎯 API Эндпоинты
-
-### Аутентификация
-
-| Метод | URL | Описание | Доступ |
-|-------|-----|----------|--------|
-| POST | `/api/register/` | Регистрация | Все |
-| POST | `/api/token/` | Получить JWT | Все |
-| POST | `/api/token/refresh/` | Обновить JWT | Все |
-
-### Пользователи
-
-| Метод | URL | Описание | Доступ |
-|-------|-----|----------|--------|
-| GET | `/api/users/` | Список | Admin |
-| GET | `/api/users/{id}/` | Профиль | Auth |
-| PUT/PATCH | `/api/users/{id}/` | Обновить | Владелец |
-| DELETE | `/api/users/{id}/` | Удалить | Владелец |
-
-### Курсы
-
-| Метод | URL | Описание | Доступ |
-|-------|-----|----------|--------|
-| GET | `/api/courses/` | Список | Auth |
-| POST | `/api/courses/` | Создать | Не модератор |
-| GET/PUT/PATCH/DELETE | `/api/courses/{id}/` | CRUD | Модератор/Владелец |
-
-### Уроки
-
-| Метод | URL | Описание | Доступ |
-|-------|-----|----------|--------|
-| GET | `/api/lessons/` | Список | Auth |
-| POST | `/api/lessons/create/` | Создать | Не модератор |
-| GET | `/api/lessons/{id}/` | Просмотр | Auth |
-| PUT/PATCH | `/api/lessons/{id}/update/` | Обновить | Модератор/Владелец |
-| DELETE | `/api/lessons/{id}/delete/` | Удалить | Владелец |
-
-### Подписки и платежи
-
-| Метод | URL | Описание |
-|-------|-----|----------|
-| POST | `/api/subscriptions/` | Подписка/отписка |
-| POST | `/api/payments/create/` | Создать платёж (Stripe) |
-| GET | `/api/payments/status/` | Статус платежа |
-| GET | `/api/payments/` | Список платежей |
-
-### HTML-страницы (кабинеты)
-
-| URL | Описание | Доступ |
-|-----|----------|--------|
-| `/login/` | Вход | Все |
-| `/logout/` | Выход | Auth |
-| `/student/` | Кабинет ученика | Student |
-| `/student/course/{id}/` | Курс ученика | Student |
-| `/student/lesson/{id}/` | Урок ученика | Student |
-| `/teacher/` | Кабинет учителя | Teacher |
-| `/teacher/course/{id}/` | Курс учителя | Teacher |
-| `/teacher/students/` | Ученики учителя | Teacher |
-| `/teacher/course/create/` | Создать курс | Teacher |
-
----
-## 📊 Дашборд ученика и учителя
-
-### 🧪 Тестовые пользователи
-
-| Роль | Email | Пароль |
-|------|-------|--------|
-| Учитель | teacher@m2bilingual.ru | Teacher2026! |
-| Ученик | student@m2bilingual.ru | Student2026! |
-
-## 📊 Дашборд сотрудника
-
-### URL: `/dashboard/login/`
-
-**Для входа используй:**
-- Email: `manager@m2bilingual.ru`
-- Password: `ManagerPass2026!`
-
-### Возможности:
-
-- ✅ **Дашборд** — статистика (всего заявок, не обработано, обработано, за сегодня)
-- ✅ **Заявки** — список с фильтрами и поиском
-- ✅ **Просмотр заявки** — отметить как обработанную
-- ❌ **НЕ видит** пользователей, платежи, курсы
-- ❌ **НЕ видит** Django Admin (если не суперпользователь)
-
-### Роли:
-
-| Роль | Доступ |
-|------|--------|
-| **Суперпользователь** | Django Admin + Дашборд + всё |
-| **Managers** (группа) | Только Дашборд и Заявки |
-| **Обычный пользователь** | Только API |
+### 🧪 Test Users
+| Role | Email | Password |
+|------|-------|----------|
+| Teacher | `teacher@m2bilingual.ru` | `Teacher2026!` |
+| Student | `student@m2bilingual.ru` | `Student2026!` |
+| Superuser | `zohn12333@gmail.com` | `Admin2026Strong!` |
 
 ---
 
-## 🧪 Тестирование
+## 🌐 URL Routes
 
-### Запуск тестов
+### Public Pages
+| URL | Description |
+|-----|-------------|
+| `/` | Home page |
+| `/contact/` | Contact form |
+| `/privacy/` | Privacy Policy |
+| `/consent/` | Data Processing Consent |
+| `/kids/` | M2Bilingual Kids (landing) |
+| `/courses/<id>/` | Public course preview (before purchase) |
+
+### Authentication
+| URL | Description |
+|-----|-------------|
+| `/login/` | Login |
+| `/logout/` | Logout |
+
+### Student Cabinet
+| URL | Description |
+|-----|-------------|
+| `/student/` | Student dashboard |
+| `/student/course/<id>/` | Course details |
+| `/student/lesson/<id>/` | Lesson page (video/PDF) |
+| `/student/lesson/<id>/test/` | Online test form |
+| `/student/profile/` | Student profile |
+
+### Teacher Cabinet
+| URL | Description |
+|-----|-------------|
+| `/teacher/` | Teacher dashboard |
+| `/teacher/course/<id>/` | Course management |
+| `/teacher/course/create/` | Create course |
+| `/teacher/course/<id>/lesson/create/` | Create lesson |
+| `/teacher/lesson/<id>/questions/` | Test questions list |
+| `/teacher/submissions/` | Submissions list (grading) |
+| `/teacher/students/` | Students list |
+
+---
+
+## 🎯 API Endpoints
+
+### Authentication
+| Method | URL | Description | Access |
+|--------|-----|-------------|--------|
+| POST | `/api/register/` | Register | All |
+| POST | `/api/token/` | Get JWT | All |
+| POST | `/api/token/refresh/` | Refresh JWT | All |
+
+### Users
+| Method | URL | Description | Access |
+|--------|-----|-------------|--------|
+| GET | `/api/users/` | List | Admin |
+| GET | `/api/users/{id}/` | Profile | Auth |
+| PUT/PATCH | `/api/users/{id}/` | Update | Owner |
+| DELETE | `/api/users/{id}/` | Delete | Owner |
+
+### Courses & Lessons
+| Method | URL | Description | Access |
+|--------|-----|-------------|--------|
+| GET | `/api/courses/` | List courses | Auth |
+| POST | `/api/courses/` | Create course | Not Moderator |
+| GET/PUT/PATCH/DELETE | `/api/courses/{id}/` | CRUD | Owner |
+| GET | `/api/lessons/` | List lessons | Auth |
+| POST | `/api/lessons/create/` | Create lesson | Not Moderator |
+| GET/PUT/PATCH/DELETE | `/api/lessons/{id}/` | CRUD | Owner |
+
+### Subscriptions & Payments
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | `/api/subscriptions/` | Subscribe/Unsubscribe |
+| POST | `/api/payments/create/` | Create payment (Stripe) |
+| GET | `/api/payments/status/` | Payment status |
+| GET | `/api/payments/` | List payments |
+
+---
+
+## 🧪 Testing
 
 ```bash
+# Run all tests
 docker compose exec app python manage.py test
-#С покрытием
+
+# Run with coverage
 docker compose exec app coverage run --source='.' manage.py test
 docker compose exec app coverage report
 docker compose exec app coverage html
 ```
 
-## 🐳 Docker
+## 🐳 Docker Commands
 
 ```bash
-# Запустить
+# Start
 docker compose up -d
 
-# Пересобрать
+# Rebuild
 docker compose up -d --build
 
-# Пересоздать контейнеры
-docker compose up -d --force-recreate
-
-# Остановить
+# Stop
 docker compose down
 
-# Логи
+# Logs
 docker compose logs --tail=50 app
 
-# Зайти в контейнер
+# Shell
 docker compose exec app bash
 
 # Django shell
@@ -365,184 +291,95 @@ docker compose exec app python manage.py shell
 
 ### GitHub Actions
 
-При push в main запускается workflow:
-1. 🔍 Lint — flake8
-2. 🧪 Test — тесты с PostgreSQL + Redis
-3. 🐳 Build — сборка Docker-образов
-4. 🚀 Deploy — автодеплой на VPS
+On every push to `main`, the following workflow runs:
+1. 🔍 **Lint** — flake8 checks
+2. 🧪 **Test** — tests with PostgreSQL + Redis
+3. 🐳 **Build** — Docker image build
+4. 🚀 **Deploy** — automated deployment to VPS
 
-### Секреты в GitHub
+### Secrets in GitHub
 
-SSH_HOST=  
-SSH_USER=deploy  
-SSH_KEY=Приватный SSH-ключ  
-SSH_PORT=  
-DEPLOY_DIR=  
-DJANGO_SECRET_KEY=Django SECRET_KEY  
-DB_NAME=  
-DB_USER=  
-DB_PASSWORD=  
-DB_HOST=  
-DB_PORT=  
-REDIS_URL=  
-CELERY_BROKER_URL=  
-CELERY_RESULT_BACKEND=  
-EMAIL_HOST_USER=  
-EMAIL_HOST_PASSWORD=  
-STRIPE_PUBLISHABLE_KEY=  
-STRIPE_SECRET_KEY=  
+```env
+SSH_HOST=
+SSH_USER=deploy
+SSH_KEY=Private SSH key
+SSH_PORT=22
+DEPLOY_DIR=
+DJANGO_SECRET_KEY=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+REDIS_URL=
+CELERY_BROKER_URL=
+CELERY_RESULT_BACKEND=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+```
 
-## 🖥 Деплой на VPS
+## 🖥 VPS Deployment
 
-### Требования
+### Requirements
 
 - Ubuntu 24.04 LTS
 - Docker + Docker Compose
-- SSH-доступ
-- PostgreSQL, Redis (в Docker)
+- SSH access
+- PostgreSQL, Redis (running in Docker)
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```text
 Djangodrf/
-│
 ├── .github/
-│   └── workflows/
-│       └── ci.yml                          # CI/CD: lint → test → build → deploy
-│
-├── config/                                 # Настройки Django-проекта
-│   ├── __init__.py
-│   ├── celery.py                           # Celery app
-│   ├── settings.py                         # Настройки (INSTALLED_APPS, БД, JWT, Stripe)
-│   ├── urls.py                             # ✅ ИСПРАВЛЕН: без дублей, с users.urls_auth и lms.urls_cabinet
-│   ├── wsgi.py
-│   └── asgi.py                             # (если есть)
-│
-├── core/                                   # Главная + форма заявки
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py                            # ContactForm (с consent)
-│   ├── migrations/
-│   ├── models.py                           # ContactRequest
-│   ├── urls.py                             # /, /contact/, /privacy/, /consent/
-│   ├── utils.py                            # send_email_notification
-│   └── views.py                            # index, contact, privacy_policy, consent
-│
-├── dashboard/                              # Дашборд сотрудника
-│   ├── __init__.py
-│   ├── decorators.py                       # manager_required
-│   ├── templates/
-│   │   └── dashboard/
-│   │       ├── base.html
-│   │       ├── login.html
-│   │       ├── index.html
-│   │       ├── requests.html
-│   │       └── request_detail.html
+│   └── workflows/ci.yml
+├── config/                 # Django settings
+│   ├── celery.py
+│   ├── settings.py
 │   ├── urls.py
-│   └── views.py                            # index, requests_list, request_detail
-│
-├── lms/                                    # Курсы, уроки, подписки
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── migrations/
-│   ├── models.py                           # Course, Lesson, Subscription
-│   ├── paginators.py
-│   ├── serializers.py
-│   ├── services.py                         # Stripe-интеграция
-│   ├── tasks.py                            # Celery-задачи
-│   ├── urls.py                             # API: /api/courses/, /api/lessons/, ...
-│   ├── urls_cabinet.py                     # 🆕 HTML: /student/, /teacher/
-│   ├── validators.py                       # YouTube-валидация
-│   ├── views.py                            # API-views (CourseViewSet, Lesson*APIView, ...)
-│   ├── views_student.py                    # 🆕 Кабинет ученика
-│   └── views_teacher.py                    # 🆕 Кабинет учителя
-│
-├── users/                                  # Пользователи, платежи, прогресс
-│   ├── __init__.py                         # ⚠️ ДОЛЖЕН БЫТЬ ПУСТЫМ (без импортов!)
-│   ├── admin.py
-│   ├── apps.py
-│   ├── decorators.py                       # 🆕 student_required, teacher_required
-│   ├── fixtures/
-│   ├── management/
-│   ├── migrations/
-│   ├── models.py                           # User, Payment, LessonProgress, CourseProgress
-│   ├── permissions.py                      # IsModerator, IsOwner
-│   ├── serializers.py
-│   ├── tasks.py
-│   ├── tests.py
-│   ├── urls.py                             # API: /api/users/, /api/register/, ...
-│   ├── urls_auth.py                        # 🆕 HTML: /login/, /logout/
-│   └── views.py                            # ✅ login_view, logout_view + API-views
-│
-├── templates/                              # HTML-шаблоны
-│   ├── core/
-│   │   ├── index.html                # С обновлённой шапкой│   │   ├── contact.html
-│   │   ├── privacy.html
-│   │   ├── consent.html
-│   │   └── kids.html                 # Страница M2Bilingual Kids
-│   │
-│   ├── users/
-│   │   └── login.html                      # 🆕 Форма входа (email + password)
-│   │
+│   └── wsgi.py
+├── core/                   # Landing + Contact form
+│   ├── models.py           # ContactRequest
+│   ├── views.py            # index, contact, privacy, consent, kids
+│   └── urls.py
+├── dashboard/              # Staff dashboard
+│   ├── views.py
+│   └── urls.py
+├── lms/                    # Courses, Lessons, Tests
+│   ├── models.py           # Course, Lesson, TestQuestion, TestAnswer, StudentAnswer
+│   ├── views_student.py    # 🆕 Student cabinet views
+│   ├── views_teacher.py    # 🆕 Teacher cabinet views
+│   ├── urls_cabinet.py     # 🆕 /student/, /teacher/
+│   ├── validators.py       # YouTube validation
+│   ├── services.py         # Stripe
+│   ├── tasks.py            # Celery
+│   └── admin.py            # 🆕 Admin configuration
+├── users/                  # Users, Payments, Progress
+│   ├── models.py           # User, Payment, LessonProgress, CourseProgress, Submission
+│   ├── decorators.py       # 🆕 student_required, teacher_required
+│   ├── views.py            # 🆕 login_view, logout_view
+│   ├── urls_auth.py        # 🆕 /login/, /logout/
+│   └── admin.py            # 🆕 User admin with roles
+├── templates/
+│   ├── core/               # index, contact, privacy, kids
+│   ├── users/              # login.html
 │   └── lms/
-│       ├── student/                        # 🆕 Кабинет ученика
-│       │   ├── base_student.html           # базовый шаблон с sidebar + HTMX
-│       │   ├── dashboard.html              # список курсов с прогрессом
-│       │   ├── course_detail.html          # уроки курса + отметка «пройден»
-│       │   ├── lesson_detail.html          # страница урока
-│       │   ├── profile.html                # профиль ученика
-│       │   └── partials/
-│       │       └── lesson_status.html      # HTMX-фрагмент (статус урока)
-│       │
-│       └── teacher/                        # 🆕 Кабинет учителя
-│           ├── base_teacher.html           # базовый шаблон с sidebar + HTMX
-│           ├── dashboard.html              # список своих курсов
-│           ├── course_detail.html          # уроки + ученики
-│           ├── students.html               # список учеников
-│           ├── create_course.html          # форма создания курса
-│           ├── create_lesson.html          # форма создания урока
-│           └── partials/
-│               ├── lesson_row.html         # HTMX-строка урока
-│               └── lesson_edit_form.html   # HTMX-форма редактирования
-│
-├── static/                                 # Статика
-│   ├── css/
-│   │   └── style.css
-│   ├── js/
-│   │   ├── main.js
-│   │   └── htmx.min.js                     # 🆕 (если скачан локально)
-│   └── images/
-│       └── hero-bg.jpeg
-│
-├── staticfiles/                            # collectstatic (volume)
-├── media/                                  # Загруженные файлы (volume)
-│   └── users/avatars/
-│
-├── fixtures/                               # Тестовые данные
-├── htmlcov/                                # coverage HTML
-├── venv/                                   # (не должно быть в образе)
-│
-├── .env                                    # Переменные окружения (не в git)
-├── .env.sample
-├── .env.docker.sample
-├── .gitignore
+│       ├── student/        # 🆕 Student templates (dashboard, course, test)
+│       └── teacher/        # 🆕 Teacher templates (dashboard, questions, grading)
+├── static/                 # CSS, JS, Images
 ├── Dockerfile
-├── docker-compose.yml                      # 6 сервисов
+├── docker-compose.yml
 ├── nginx.conf
 ├── manage.py
 ├── requirements.txt
-├── pyproject.toml
-├── poetry.lock
-├── coverage.txt
-├── main.py                                 
-└──README.md
+└── README.md
 ```
 
-## 👨‍💻 Автор
+## 👨‍💻 Author
 
-Юлия Тихонова
+Iuliia Tikhonova
 
 - GitHub: @yuliyaBarashka
 - Email: zohn12333@gmail.com
