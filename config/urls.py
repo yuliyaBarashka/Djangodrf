@@ -15,13 +15,13 @@ urlpatterns = [
     # Дашборд сотрудника
     path('dashboard/', include('dashboard.urls')),
 
-    # HTML-авторизация (login/logout для кабинетов)
+    # HTML-авторизация: /login/, /logout/
     path('', include('users.urls_auth')),
 
-    # Кабинеты ученика и учителя
+    # Кабинеты: /student/, /teacher/, /courses/<id>/
     path('', include('lms.urls_cabinet')),
 
-    # Основные страницы (главная, контакты, privacy, consent)
+    # Публичные страницы: /, /contact/, /privacy/, /consent/, /kids/
     path('', include('core.urls')),
 
     # API
@@ -34,6 +34,5 @@ urlpatterns = [
     path('api/docs/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
-# Медиа и статика в DEBUG
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

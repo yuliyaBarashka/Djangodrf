@@ -1,0 +1,81 @@
+{% extends 'lms/student/base_student.html' %}
+
+{% block title %}{{ lesson.name }} — Тест{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ lesson.name }}</h1>
+<p class="text-muted">{{ lesson.description }}</p>
+
+{% if lesson.test_file %}
+    <div class="card-stat mb-3">
+        <a href="{{ lesson.test_file.url }}" target="_blank" class="btn btn-secondary">
+            📄 Скачать задания (PDF)
+        </a>
+    </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data"
+      action="{% url 'lms:student_test_submit' lesson.id %}">
+    {% csrf_token %}
+
+    {% for question in questions %}
+        <div class="card-stat mb-3">
+            <h5>Вопрос {{ forloop.counter }} ({{ question.points }} б.)</h5>
+            <p>{{ question.text }}</p>
+
+            {# ОДИН ВАРИАНТ #}
+            {% if question.question_type == 'single' %}
+                {% for answer in question.answers.all %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio"
+                               name="question_{{ question.id }}"
+                               value="{{ answer.id }}"
+                               id="q{{ question.id }}_a{{ answer.id }}">
+                        <label class="form-check-label"
+                               for="q{{ question.id }}_a{{ answer.id }}">
+                            {{ answer.text }}
+                        </label>
+                    </div>
+                {% endfor %}
+
+            {# НЕСКОЛЬКО ВАРИАНТОВ #}
+            {% elif question.question_type == 'multiple' %}
+                {% for answer in question.answers.all %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               name="question_{{ question.id }}"
+                               value="{{ answer.id }}"
+                               id="q{{ question.id }}_a{{ answer.id }}">
+                        <label class="form-check-label"
+                               for="q{{ question.id }}_a{{ answer.id }}">
+                            {{ answer.text }}
+                        </label>
+                    </div>
+                {% endfor %}
+
+            {# ТЕКСТОВЫЙ ОТВЕТ #}
+            {% elif question.question_type == 'text' %}
+                <textarea name="question_{{ question.id }}"
+                          class="form-control" rows="4"
+                          placeholder="Введите ваш ответ..."></textarea>
+
+            {# ФАЙЛ #}
+            {% elif question.question_type == 'file' %}
+                <input type="file" name="question_{{ question.id }}"
+                       class="form-control">
+            {% endif %}
+        </div>
+    {% empty %}
+        <div class="alert alert-info">В этом тесте пока нет вопросов</div>
+    {% endfor %}
+
+    {% if questions %}
+        <button type="submit" class="btn btn-primary">
+            Отправить на проверку
+        </button>
+    {% endif %}
+    <a href="{% url 'lms:student_lesson_detail' lesson.id %}" class="btn btn-secondary">
+        ← К уроку
+    </a>
+</form>
+{% endblock %}
