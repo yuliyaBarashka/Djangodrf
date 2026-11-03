@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lms', '0006_alter_lesson_options_course_is_published_and_more'),
+        ('lms', '0006_lesson_order'),
     ]
 
     operations = [
