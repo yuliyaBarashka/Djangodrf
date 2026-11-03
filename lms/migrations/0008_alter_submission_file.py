@@ -15,9 +15,4 @@ class Migration(migrations.Migration):
             name='order',
             field=models.PositiveIntegerField(default=0, verbose_name='Порядок'),
         ),
-        migrations.AlterField(
-            model_name='submission',
-            name='file',
-            field=models.FileField(blank=True, null=True, upload_to='submissions/', verbose_name='Файл с решением'),
-        ),
     ]
