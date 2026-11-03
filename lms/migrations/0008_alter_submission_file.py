@@ -10,11 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='lesson',
-            name='order',
-            field=models.PositiveIntegerField(default=0, verbose_name='Порядок'),
-        ),
         migrations.AlterField(
             model_name='submission',
             name='file',
