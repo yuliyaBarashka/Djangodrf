@@ -1,0 +1,57 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}Работы учеников — M2Bilingual{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Работы учеников</h1>
+
+<div class="mb-3">
+    <a href="{% url 'lms:teacher_submissions' %}" class="btn btn-sm btn-secondary">Все</a>
+    <a href="?status=submitted" class="btn btn-sm btn-warning">На проверке</a>
+    <a href="?status=checked" class="btn btn-sm btn-success">Проверенные</a>
+</div>
+
+{% if submissions %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Ученик</th>
+                <th>Курс</th>
+                <th>Урок</th>
+                <th>Статус</th>
+                <th>Отправлено</th>
+                <th>Оценка</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in submissions %}
+                <tr>
+                    <td>{{ sub.student.email }}</td>
+                    <td>{{ sub.lesson.course.name }}</td>
+                    <td>{{ sub.lesson.name }}</td>
+                    <td>
+                        {% if sub.status == 'submitted' %}
+                            <span class="badge bg-warning">На проверке</span>
+                        {% elif sub.status == 'checked' %}
+                            <span class="badge bg-success">Проверено</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ sub.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ sub.submitted_at|date:"d.m.Y H:i"|default:"—" }}</td>
+                    <td>{{ sub.score|default:"—" }}</td>
+                    <td>
+                        <a href="{% url 'lms:teacher_check_submission' sub.id %}"
+                           class="btn btn-sm btn-primary">
+                            {% if sub.status == 'checked' %}Пересмотреть{% else %}Проверить{% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">Работ пока нет</div>
+{% endif %}
+{% endblock %}

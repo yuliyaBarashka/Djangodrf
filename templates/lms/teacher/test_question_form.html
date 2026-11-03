@@ -1,0 +1,67 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}Новый вопрос — {{ lesson.name }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Новый вопрос</h1>
+<p class="text-muted">Курс: {{ lesson.course.name }} · Урок: {{ lesson.name }}</p>
+
+<form method="post" class="card-stat" style="max-width: 800px;">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">Текст вопроса *</label>
+        <textarea name="text" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Тип вопроса</label>
+            <select name="question_type" class="form-control" id="question-type">
+                <option value="single">Один вариант</option>
+                <option value="multiple">Несколько вариантов</option>
+                <option value="text">Текстовый ответ</option>
+                <option value="file">Загрузка файла</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Баллы</label>
+            <input type="number" name="points" class="form-control" value="1" min="1">
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Порядок</label>
+            <input type="number" name="order" class="form-control" value="0" min="0">
+        </div>
+    </div>
+
+    <div id="answers-block">
+        <hr>
+        <h5>Варианты ответа</h5>
+        <p class="text-muted small">Отметьте галочкой правильный вариант (для типа «Несколько» — несколько)</p>
+
+        {% for i in "0123" %}
+            <div class="input-group mb-2">
+                <span class="input-group-text">
+                    <input type="checkbox" name="answer_correct" value="{{ forloop.counter0 }}">
+                </span>
+                <input type="text" name="answer_text" class="form-control"
+                       placeholder="Вариант {{ forloop.counter }}">
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+    <a href="{% url 'lms:teacher_test_questions' lesson.id %}" class="btn btn-secondary mt-3">Отмена</a>
+</form>
+
+<script>
+document.getElementById('question-type').addEventListener('change', function() {
+    var block = document.getElementById('answers-block');
+    if (this.value === 'single' || this.value === 'multiple') {
+        block.style.display = 'block';
+    } else {
+        block.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

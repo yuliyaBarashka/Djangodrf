@@ -1,0 +1,33 @@
+{% extends 'lms/student/base_student.html' %}
+
+{% block title %}{{ lesson.name }} — Результат{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ lesson.name }}</h1>
+
+<div class="alert alert-info">
+    Вы уже отправили работу на проверку.
+    {% if submission.status == 'checked' %}
+        Оценка выставлена.
+    {% else %}
+        Дождитесь проверки учителем.
+    {% endif %}
+</div>
+
+<div class="card-stat mb-3" style="max-width: 500px;">
+    <p><strong>Статус:</strong> {{ submission.get_status_display }}</p>
+    <p><strong>Отправлено:</strong> {{ submission.submitted_at|date:"d.m.Y H:i" }}</p>
+
+    {% if submission.status == 'checked' %}
+        <hr>
+        <p><strong>Оценка:</strong> {{ submission.score }} / {{ lesson.max_score }}</p>
+        {% if submission.teacher_comment %}
+            <p><strong>Комментарий:</strong> {{ submission.teacher_comment }}</p>
+        {% endif %}
+    {% endif %}
+</div>
+
+<a href="{% url 'lms:student_lesson_detail' lesson.id %}" class="btn btn-secondary">
+    ← К уроку
+</a>
+{% endblock %}

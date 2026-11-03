@@ -1,0 +1,56 @@
+{% extends 'lms/student/base_student.html' %}
+
+{% block title %}{{ course.name }} — M2Bilingual{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ course.name }}</h1>
+
+{% if course.preview %}
+    <img src="{{ course.preview.url }}" alt="{{ course.name }}"
+         style="max-width: 100%; border-radius: 12px; margin-bottom: 24px;">
+{% endif %}
+
+<p class="text-muted">{{ course.description }}</p>
+
+<div class="card-stat mb-4" style="max-width: 400px;">
+    <div class="card-stat__label">Цена курса</div>
+    <div class="card-stat__value">{{ course.price }} ₽</div>
+</div>
+
+{% if user.is_authenticated %}
+    {% if is_subscribed %}
+        <a href="{% url 'lms:student_course_detail' course.id %}" class="btn btn-primary">
+            Перейти к курсу →
+        </a>
+    {% else %}
+        <form method="post" action="{% url 'lms:payment_create' %}">
+            {% csrf_token %}
+            <input type="hidden" name="course_id" value="{{ course.id }}">
+            <input type="hidden" name="amount" value="{{ course.price }}">
+            <button type="submit" class="btn btn-primary">
+                Купить курс за {{ course.price }} ₽
+            </button>
+        </form>
+    {% endif %}
+{% else %}
+    <a href="{% url 'users:login' %}?next={% url 'lms:course_preview' course.id %}"
+       class="btn btn-primary">
+        Войти и купить
+    </a>
+{% endif %}
+
+<h2 class="mt-5 mb-3">Программа курса</h2>
+
+{% if lessons %}
+    <div class="list-group">
+        {% for lesson in lessons %}
+            <div class="list-group-item">
+                <h5 class="mb-1">{{ lesson.name }}</h5>
+                <small class="text-muted">{{ lesson.description|truncatechars:120 }}</small>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">Программа курса пока не опубликована</div>
+{% endif %}
+{% endblock %}

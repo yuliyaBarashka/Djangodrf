@@ -3,41 +3,90 @@
 {% block title %}{{ lesson.name }} — M2Bilingual{% endblock %}
 
 {% block content %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="{% url 'lms:student_dashboard' %}">Мои курсы</a>
-        </li>
-        <li class="breadcrumb-item">
-            <a href="{% url 'lms:student_course_detail' lesson.course.id %}">
-                {{ lesson.course.name }}
-            </a>
-        </li>
-        <li class="breadcrumb-item active">{{ lesson.name }}</li>
-    </ol>
-</nav>
-
 <h1 class="page-title">{{ lesson.name }}</h1>
 <p class="text-muted">{{ lesson.description }}</p>
 
-{% if lesson.video_url %}
-    <div class="ratio ratio-16x9 mb-4" style="max-width: 800px;">
-        <iframe src="{{ lesson.video_url }}" allowfullscreen></iframe>
+{% if is_preview %}
+    <div class="alert alert-info">
+        👁 <strong>Режим предпросмотра</strong> — так урок видит ученик.
+        <a href="{% url 'lms:teacher_course_detail' lesson.course.id %}">← Вернуться к курсу</a>
     </div>
 {% endif %}
 
+{# ===== ВИДЕО ===== #}
+{% if lesson.youtube_embed_url %}
+    <div class="ratio ratio-16x9 mb-4" style="max-width: 800px;">
+        <iframe src="{{ lesson.youtube_embed_url }}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+        </iframe>
+    </div>
+{% endif %}
+
+{# ===== КОНСПЕКТ ===== #}
+{% if lesson.lecture_pdf %}
+    <div class="card-stat mb-3">
+        <h5>📄 Конспект лекций</h5>
+        <a href="{{ lesson.lecture_pdf.url }}" target="_blank" class="btn btn-primary">
+            Скачать PDF
+        </a>
+    </div>
+{% endif %}
+
+{# ===== РАБОЧАЯ ТЕТРАДЬ ===== #}
+{% if lesson.workbook_pdf %}
+    <div class="card-stat mb-3">
+        <h5>📝 Рабочая тетрадь</h5>
+        <a href="{{ lesson.workbook_pdf.url }}" target="_blank" class="btn btn-primary">
+            Скачать PDF
+        </a>
+    </div>
+{% endif %}
+
+{# ===== КОНТРОЛЬНАЯ ===== #}
+{% if lesson.is_test %}
+    <div class="card-stat mb-3">
+        <h5>🎓 Контрольная работа</h5>
+
+        {% if lesson.test_file %}
+            <p><a href="{{ lesson.test_file.url }}" target="_blank" class="btn btn-secondary">
+                📄 Скачать задания (PDF)
+            </a></p>
+        {% endif %}
+
+        {% if submission %}
+            <hr>
+            <p><strong>Статус:</strong> {{ submission.get_status_display }}</p>
+            {% if submission.status == 'checked' %}
+                <p><strong>Оценка:</strong> {{ submission.score }} / {{ lesson.max_score }}</p>
+                {% if submission.teacher_comment %}
+                    <p><strong>Комментарий учителя:</strong> {{ submission.teacher_comment }}</p>
+                {% endif %}
+            {% endif %}
+
+            {% if submission.file %}
+                <p><strong>Ваш файл:</strong>
+                    <a href="{{ submission.file.url }}" target="_blank">Скачать</a>
+                </p>
+            {% endif %}
+        {% endif %}
+
+        {% if not is_preview %}
+            <hr>
+            {% if not submission or submission.status == 'draft' %}
+                <a href="{% url 'lms:student_test_start' lesson.id %}" class="btn btn-primary">
+                    ▶ Пройти тест
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
+
+{# ===== ОТМЕТКА «ПРОЙДЕНО» ===== #}
 <div id="lesson-status-{{ lesson.id }}" class="mt-4">
     {% include 'lms/student/partials/lesson_status.html' %}
 </div>
-
-{% if not progress.is_completed %}
-    <button class="btn btn-success mt-3"
-            hx-post="{% url 'lms:student_lesson_complete' lesson.id %}"
-            hx-target="#lesson-status-{{ lesson.id }}"
-            hx-swap="innerHTML">
-        Отметить пройденным
-    </button>
-{% endif %}
 
 <a href="{% url 'lms:student_course_detail' lesson.course.id %}" class="btn btn-secondary mt-3">
     ← К курсу

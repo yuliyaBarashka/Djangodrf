@@ -5,23 +5,66 @@
 {% block content %}
 <h1 class="page-title">Добавить урок в "{{ course.name }}"</h1>
 
-<div class="card-stat" style="max-width: 600px;">
-    <form method="post">
+<div class="card-stat" style="max-width: 700px;">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="mb-3">
-            <label class="form-label">Название урока</label>
+            <label class="form-label">Название урока *</label>
             <input type="text" name="name" class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Описание</label>
-            <textarea name="description" class="form-control" rows="4"></textarea>
+            <textarea name="description" class="form-control" rows="3"></textarea>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Ссылка на видео (YouTube)</label>
-            <input type="url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+            <label class="form-label">Порядок</label>
+            <input type="number" name="order" class="form-control" value="0" min="0">
+            <small class="text-muted">Меньше — выше в списке</small>
+        </div>
+
+        <hr>
+        <h5>📹 Видео</h5>
+        <div class="mb-3">
+            <label class="form-label">Ссылка на YouTube (опционально)</label>
+            <input type="url" name="video_url" class="form-control"
+                   placeholder="https://www.youtube.com/watch?v=...">
+            <small class="text-muted">
+                Подойдут: youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/...
+            </small>
+        </div>
+
+        <hr>
+        <h5>📄 Материалы (опционально)</h5>
+        <div class="mb-3">
+            <label class="form-label">Конспект лекций (PDF)</label>
+            <input type="file" name="lecture_pdf" class="form-control" accept=".pdf">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Рабочая тетрадь (PDF)</label>
+            <input type="file" name="workbook_pdf" class="form-control" accept=".pdf">
+        </div>
+
+        <hr>
+        <h5>📝 Контрольная работа</h5>
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="is_test" class="form-check-input" id="is_test">
+            <label class="form-check-label" for="is_test">
+                Это контрольная работа (ученик загрузит файл с решением)
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Задания контрольной (PDF, опционально)</label>
+            <input type="file" name="test_file" class="form-control" accept=".pdf">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Максимальный балл</label>
+            <input type="number" name="max_score" class="form-control" value="100" min="1">
         </div>
 
         <button type="submit" class="btn btn-primary">

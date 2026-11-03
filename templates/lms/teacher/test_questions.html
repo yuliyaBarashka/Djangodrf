@@ -1,0 +1,60 @@
+{% extends 'lms/teacher/base_teacher.html' %}
+
+{% block title %}Вопросы — {{ lesson.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'lms:teacher_course_detail' lesson.course.id %}">{{ lesson.course.name }}</a></li>
+        <li class="breadcrumb-item active">{{ lesson.name }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title">Вопросы контрольной</h1>
+    <a href="{% url 'lms:teacher_test_question_create' lesson.id %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Добавить вопрос
+    </a>
+</div>
+
+<p class="text-muted">Макс. балл за тест: {{ lesson.max_score }}</p>
+
+{% if questions %}
+    {% for question in questions %}
+        <div class="card-stat mb-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>Вопрос {{ forloop.counter }}</strong>
+                    <span class="badge bg-info">{{ question.get_question_type_display }}</span>
+                    <span class="badge bg-secondary">{{ question.points }} б.</span>
+                </div>
+                <button class="btn btn-sm btn-outline-danger"
+                        hx-delete="{% url 'lms:teacher_test_question_delete' question.id %}"
+                        hx-target="closest .card-stat"
+                        hx-swap="outerHTML"
+                        hx-confirm="Удалить вопрос?">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <p class="mt-2">{{ question.text }}</p>
+
+            {% if question.question_type == 'single' or question.question_type == 'multiple' %}
+                <ul class="list-unstyled ms-3">
+                    {% for answer in question.answers.all %}
+                        <li>
+                            {% if answer.is_correct %}✅{% else %}⬜{% endif %}
+                            {{ answer.text }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">Вопросов пока нет</div>
+{% endif %}
+
+<a href="{% url 'lms:teacher_course_detail' lesson.course.id %}" class="btn btn-secondary mt-3">
+    ← К курсу
+</a>
+{% endblock %}
