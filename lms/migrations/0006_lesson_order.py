@@ -14,6 +14,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # 1. Сначала добавляем поле order
+        migrations.AddField(
+            model_name='lesson',
+            name='order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Порядок'),
+        ),
+        # 2. Потом меняем сортировку (т.к. она ссылается на order)
         migrations.AlterModelOptions(
             name='lesson',
             options={'ordering': ['order', 'id'], 'verbose_name': 'Урок', 'verbose_name_plural': 'Уроки'},
